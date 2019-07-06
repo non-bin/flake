@@ -1,0 +1,54 @@
+{
+	"keyBinds": {
+		"comment": "`"
+	},
+
+	"menu": [
+		{
+			"code": "ff",
+			"type": "item",
+			"name": "Flake",
+			"options": [
+				{
+					"type": "radio",
+					"values": [["b", "Battered"], ["g", "Grilled"], ["c", "Crumbed"]]
+				}
+			]
+		},
+		{
+			"code": "dr",
+			"type": "item",
+			"name": "Drink",
+			"options": [
+				{
+					"type": "radio",
+					"values": [["c", "Can"], ["s", "Small Bottle"], ["l", "Large Bottle"]]
+				}
+			]
+		},
+		{
+			"code": "fs",
+			"type": "item",
+			"name": "Salmon (Grilled)"
+		},
+		{
+			"code": "ds",
+			"type": "item",
+			"name": "Dim Sim",
+			"options": [
+				{
+					"type": "radio",
+					"values": [["st", "Steamed"], ["f", "Fried"]]
+				},
+				{
+					"type": "radio",
+					"values": [["c", "Classic"], ["o", "Southie"]]
+				},
+				{
+					"type": "toggles",
+					"values": [["so", "Soy Sauce"]]
+				}
+			]
+		}
+	]
+}

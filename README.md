@@ -1,2 +1,3 @@
-# flake
-command like pos system
+# Flake
+
+Command line pos system
