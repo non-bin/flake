@@ -1,0 +1,19 @@
+{
+  "name": "flake",
+  "version": "0.1.0",
+  "description": "Command line POS system",
+  "main": "flake.js",
+  "scripts": {
+    "test": "/usr/bin/node --inspect-brk=9229 flake.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/non-bin/flake.git"
+  },
+  "author": "Alice Jacka",
+  "license": "UNLICENCED",
+  "bugs": {
+    "url": "https://github.com/non-bin/flake/issues"
+  },
+  "homepage": "https://github.com/non-bin/flake#readme"
+}
