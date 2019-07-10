@@ -1,54 +1,74 @@
 {
 	"keyBinds": {
-		"comment": "`"
+		"comment": "`",
+		"order": "\u0009",
+		"quantityInc": ["+", "="],
+		"quantityDec": "-",
+		"back": "\u001b",
+		"confirm": "\r",
+		"backspace": "\u007f"
 	},
 
-	"menu": [
-		{
-			"code": "ff",
+	"menu": {
+		"ff": {
 			"type": "item",
 			"name": "Flake",
+			"price": 8,
 			"options": [
 				{
 					"type": "radio",
-					"values": [["b", "Battered"], ["g", "Grilled"], ["c", "Crumbed"]]
+					"name": "Method",
+					"selected": "b",
+					"values": {"b": {"name": "Battered"}, "g": {"name": "Grilled"}, "c": {"name": "Crumbed"}}
 				}
 			]
 		},
-		{
-			"code": "dr",
+		"dr": {
 			"type": "item",
 			"name": "Drink",
+			"price": 2.5,
 			"options": [
 				{
 					"type": "radio",
-					"values": [["c", "Can"], ["s", "Small Bottle"], ["l", "Large Bottle"]]
+					"name": "Type",
+					"selected": "c",
+					"values": {"c": {"name": "Can"}, "s": {"name": "Small Bottle", "price": 1}, "l": {"name": "Large Bottle", "price": 2}}
 				}
 			]
 		},
-		{
-			"code": "fs",
+		"fs": {
 			"type": "item",
-			"name": "Salmon (Grilled)"
+			"name": "Salmon (Grilled)",
+			"price": 6
 		},
-		{
-			"code": "ds",
+		"ds": {
 			"type": "item",
 			"name": "Dim Sim",
+			"price": 2.5,
 			"options": [
 				{
 					"type": "radio",
-					"values": [["st", "Steamed"], ["f", "Fried"]]
+					"name": "Method",
+					"selected": "s",
+					"values": {"s": {"name": "Steamed"}, "f": {"name": "Fried"}}
 				},
 				{
 					"type": "radio",
-					"values": [["c", "Classic"], ["o", "Southie"]]
+					"name": "Type",
+					"selected": "c",
+					"values": {"c": {"name": "Classic"}, "o": {"name": "Southie", "price": 1}}
 				},
 				{
-					"type": "toggles",
-					"values": [["so", "Soy Sauce"]]
+					"type": "toggle",
+					"name": "Addons",
+					"values": {"y": {"name": "Soy Sauce"}}
+				},
+				{
+					"type": "toggle",
+					"name": "Discounts",
+					"values": {"1": {"name": "One", "price": -1}, "2": {"name": "Three", "price": -3}, "3": {"name": "Five", "price": -5}}
 				}
 			]
 		}
-	]
+	}
 }
