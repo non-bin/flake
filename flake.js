@@ -393,3 +393,13 @@ function sortByKey(unordered){
 
 	return ordered;
 }
+
+
+/**
+ * Write an entry to the log
+ *
+ * @param {String} logString string to log
+ */
+function log(logString) {
+	fs.writeFile('./flake.log', logString + '\n', {flag: 'a'}, function() {});
+}
