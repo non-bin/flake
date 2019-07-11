@@ -178,9 +178,10 @@ process.stdin.on('data', function(key){
 				location     = ['item', location[1]];
 
 				// reset the item variable
-				item.code    = location[1];
-				item.options = [];
-				item.comment = false;
+				item.code     = location[1];
+				item.options  = [];
+				item.quantity = 1;
+				item.comment  = false;
 
 				if (menu[location[1]].options) {  // save the selected options to the item
 					for (let i = 0; i < menu[location[1]].options.length; i++) {

@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## TODO Next Release
 ### Add
+ - ability to edit order
  - name input
  - recept printing
  - manual price input
