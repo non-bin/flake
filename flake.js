@@ -172,6 +172,13 @@ process.stdin.on('data', function(key){
 	render();
 });
 
+/**
+ * Respond to resizes
+ */
+process.stdout.on('resize', () => {
+	render();
+});
+
 
 /**
  * Render the display based on location
