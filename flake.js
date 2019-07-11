@@ -41,7 +41,7 @@ process.stdout.write(CURSOR_HIDE);  // hide the cursor
 
 // setup variables
 var location    = ['menu', ''];                 // where the user is
-var order       = [];                           // store the order
+var order       = {'price': 0, 'items': []};                           // store the order
 var exitConfirm = false;                        // require 2 ^c/^d to exit
 var err         = [];                           // store errors to be rendered
 var item        = {'code': '', 'options': [], 'quantity': 1, 'price': 0};  // information on the current item
@@ -103,21 +103,27 @@ process.stdin.on('data', function(key){
 
 			// add to order
 			if (key == config.keyBinds.confirm) {
+				// calculate price
 				item.price = menu[item.code].price;  // set the initial price
 				for (let i = 0; i < item.options.length; i++) {  // apply the price of each option
 					if (item.options[i] != '' && menu[item.code].options[i].values[item.options[i]].price) {
 						item.price += menu[item.code].options[i].values[item.options[i]].price;
 					}
 				}
-
 				item.price *= item.quantity;  // take into account quantity
-
 				if (item.price < 0) {  // prevent negative prices
 					item.price = 0;
 				}
 
-				order.push({});
-				Object.assign(order[order.length-1], item);  // add to the order
+				// add to the order
+				order.items.push({});
+				Object.assign(order.items[order.items.length-1], item);
+
+				// update total price
+				order.price = 0;
+				for (let i = 0; i < order.items.length; i++) {
+					order.price += order.items[i].price;
+				}
 
 				location = ['menu', ''];  // go back to the menu
 				key      = '';            // don't reister the key press twice
@@ -238,21 +244,25 @@ function render() {
 
 	lineNo = 3;
 
-	// print each item
-	for (let i = 0; i < order.length; i++) {
+	// each item
+	for (let i = 0; i < order.items.length; i++) {
 		process.stdout.write('\033[' + lineNo + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position cursor
-		process.stdout.write(menu[order[i].code].name + ' x' + order[i].quantity + ' $' + order[i].price);
+		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price);
 
-		for (let j = 0; j < order[i].options.length; j++) {
-			if (order[i].options[j] != '') {
+		for (let j = 0; j < order.items[i].options.length; j++) {
+			if (order.items[i].options[j] != '') {
 				lineNo++;
 				process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-config.orderWidth) +'H');  // position cursor
-				process.stdout.write(DIM + ' ' + menu[order[i].code].options[j].values[order[i].options[j]].name + RESET);
+				process.stdout.write(DIM + ' ' + menu[order.items[i].code].options[j].values[order.items[i].options[j]].name + RESET);
 			}
 		}
 
 		lineNo += 2;
 	}
+
+	// total price
+	process.stdout.write('\033[' + process.stdout.rows + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position at the bottom of the order
+	process.stdout.write('Price: $' + order.price);
 
 
 	// errors
