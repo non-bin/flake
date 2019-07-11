@@ -43,7 +43,7 @@ process.stdout.write(CURSOR_HIDE);  // hide the cursor
 // setup variables
 var location    = ['menu', ''];                                            // where the user is
 var order       = {'price': 0, 'items': [], 'comment': false};             // store the order
-var item        = {'code': '', 'options': [], 'quantity': 1, 'price': 0};  // information on the current item
+var item        = {'code': '', 'options': [], 'quantity': 1, 'price': 0, 'comment': false};  // information on the current item
 var exitConfirm = false;                                                   // require 2 ^c/^d to exit
 var err         = [];                                                      // store errors to be rendered
 
@@ -70,7 +70,14 @@ process.stdin.on('data', function(key){
 
 	// item
 	if (location[0] == 'item') {
-		if (key == config.keyBinds.back) {
+		if (key == config.keyBinds.comment) {  // add a comment
+			location[0] = 'itemComment';
+			if (item.comment === false) {
+				item.comment = '';
+			}
+			render();
+			return;
+		} else if (key == config.keyBinds.back) {  // go back
 			location = ['menu', ''];  // go back to the menu
 			key      = '';            // don't register the key press twice
 		} else {
@@ -169,8 +176,11 @@ process.stdin.on('data', function(key){
 			// if only one item is left
 			if (Object.keys(submenu).length == 1) {
 				location     = ['item', location[1]];
+
+				// reset the item variable
 				item.code    = location[1];
 				item.options = [];
+				item.comment = false;
 
 				if (menu[location[1]].options) {  // save the selected options to the item
 					for (let i = 0; i < menu[location[1]].options.length; i++) {
@@ -196,6 +206,20 @@ process.stdin.on('data', function(key){
 			}
 		} else {
 			order.comment += key;
+		}
+	}
+
+	// item comment
+	if (location[0] == 'itemComment') {
+		if (key == config.keyBinds.backspace) {  // delete a char from the comment
+			item.comment = item.comment.slice(0, -1);
+		} else if (key == config.keyBinds.back || key == config.keyBinds.comment || key == config.keyBinds.confirm) {  // clear the filter string
+			location[0] = 'item';
+			if (item.comment == '') {
+				item.comment = false;
+			}
+		} else {
+			item.comment += key;
 		}
 	}
 
@@ -234,6 +258,7 @@ function render() {
 		}
 		break;
 
+	case 'itemComment':
 	case 'item':
 		process.stdout.write(menu[item.code].name + '\n\n');  // name
 		process.stdout.write('Quantity: ' + item.quantity + '\n\n');  // quantity
@@ -264,8 +289,16 @@ function render() {
 			}
 		}
 
+		if (item.comment !== false) {
+			process.stdout.write('COMMENT:\n' + item.comment);
+			if (location[0] == 'itemComment') {
+				process.stdout.write(CURSOR_CHAR);
+			}
+		}
+
 		break;
 	}
+
 
 	// right hand side
 	process.stdout.write('\033[1;'+(process.stdout.columns-config.orderWidth)+'H');  // position cursor
@@ -273,7 +306,7 @@ function render() {
 
 	lineNo = 3;
 
-	// each item
+	// each item in the order
 	for (let i = 0; i < order.items.length; i++) {
 		process.stdout.write('\033[' + lineNo + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position cursor
 		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price);  // print NAME xQUANTITY $PRICE
@@ -284,6 +317,11 @@ function render() {
 				process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-config.orderWidth) +'H');  // position cursor
 				process.stdout.write(DIM + ' ' + menu[order.items[i].code].options[j].values[order.items[i].options[j]].name + RESET);
 			}
+		}
+		if (order.items[i].comment) {  // if the item has a comment
+			lineNo++;
+			process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-config.orderWidth) +'H');  // position cursor
+			process.stdout.write(DIM + ' ' + order.items[i].comment + RESET);
 		}
 
 		lineNo += 2;

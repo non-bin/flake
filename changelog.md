@@ -6,7 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## TODO Next Release
 ### Add
- - comments on items
  - name input
  - recept printing
  - manual price input
@@ -27,3 +26,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - order display
  - total price display
  - comments on order
+ - comments on items
