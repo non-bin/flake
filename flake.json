@@ -8,6 +8,7 @@
 		"confirm": "\r",
 		"backspace": "\u007f"
 	},
+	"orderWidth": 30,
 
 	"menu": {
 		"ff": {
