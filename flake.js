@@ -27,6 +27,7 @@ const ERASE_LN    = '\033[K';
 const RESET       = '\x1b[0m';
 const RESET_POS   = '\033[1;0H';
 const SELECTED    = FG_BLACK + BG_WHITE;
+const CURSOR_CHAR = '\u2588';
 
 // load config
 const config  = JSON.parse(fs.readFileSync('./flake.json', 'utf8'));  // read and parse the config file
@@ -40,11 +41,11 @@ process.stdin.setEncoding();        // get usefull feedback
 process.stdout.write(CURSOR_HIDE);  // hide the cursor
 
 // setup variables
-var location    = ['menu', ''];                 // where the user is
-var order       = {'price': 0, 'items': []};                           // store the order
-var exitConfirm = false;                        // require 2 ^c/^d to exit
-var err         = [];                           // store errors to be rendered
+var location    = ['menu', ''];                                            // where the user is
+var order       = {'price': 0, 'items': [], 'comment': false};             // store the order
 var item        = {'code': '', 'options': [], 'quantity': 1, 'price': 0};  // information on the current item
+var exitConfirm = false;                                                   // require 2 ^c/^d to exit
+var err         = [];                                                      // store errors to be rendered
 
 render();  // render the initial screen
 
@@ -71,7 +72,7 @@ process.stdin.on('data', function(key){
 	if (location[0] == 'item') {
 		if (key == config.keyBinds.back) {
 			location = ['menu', ''];  // go back to the menu
-			key      = '';            // don't reister the key press twice
+			key      = '';            // don't register the key press twice
 		} else {
 			// options
 			if (menu[item.code].options) {
@@ -106,7 +107,7 @@ process.stdin.on('data', function(key){
 				// calculate price
 				item.price = menu[item.code].price;  // set the initial price
 				for (let i = 0; i < item.options.length; i++) {  // apply the price of each option
-					if (item.options[i] != '' && menu[item.code].options[i].values[item.options[i]].price) {
+					if (item.options[i] && menu[item.code].options[i].values[item.options[i]].price) {
 						item.price += menu[item.code].options[i].values[item.options[i]].price;
 					}
 				}
@@ -126,7 +127,7 @@ process.stdin.on('data', function(key){
 				}
 
 				location = ['menu', ''];  // go back to the menu
-				key      = '';            // don't reister the key press twice
+				key      = '';            // don't register the key press twice
 			}
 		}
 	}
@@ -138,40 +139,63 @@ process.stdin.on('data', function(key){
 
 	// menu
 	if (location[0] == 'menu') {
-		if (key == config.keyBinds.backspace) {  // delete a filter char
-			location[1] = location[1].slice(0, -1);
-		} else if (key == config.keyBinds.back) {  // clear the filter string
-			location[1] = '';
+		if (key == config.keyBinds.comment) {
+			location[0] = 'orderComment';
+			if (order.comment === false) {
+				order.comment = '';
+			}
+			render();
+			return;
 		} else {
-			location[1] += key;
-		}
+			if (key == config.keyBinds.backspace) {  // delete a filter char
+				location[1] = location[1].slice(0, -1);
+			} else if (key == config.keyBinds.back) {  // clear the filter string
+				location[1] = '';
+			} else {
+				location[1] += key;
+			}
 
-		// filter the menu based on input string
-		submenu = filterMenu(location[1]);
-
-		// if the filtered menu is empty, throw an error and revert
-		if (Object.keys(submenu).length == 0) {
-			err.push('No items matching "'+location[1]+'"');
-			location[1] = location[1].slice(0, -1);
-
+			// filter the menu based on input string
 			submenu = filterMenu(location[1]);
-		}
 
-		// if only one item is left
-		if (Object.keys(submenu).length == 1) {
-			location     = ['item', location[1]];
-			item.code    = location[1];
-			item.options = [];
+			// if the filtered menu is empty, throw an error and revert
+			if (Object.keys(submenu).length == 0) {
+				err.push('No items matching "'+location[1]+'"');
+				location[1] = location[1].slice(0, -1);
 
-			if (menu[location[1]].options) {  // save the selected options to the item
-				for (let i = 0; i < menu[location[1]].options.length; i++) {
-					if (menu[location[1]].options[i].selected) {
-						item.options.push(menu[location[1]].options[i].selected);
-					} else {
-						item.options.push('');
+				submenu = filterMenu(location[1]);
+			}
+
+			// if only one item is left
+			if (Object.keys(submenu).length == 1) {
+				location     = ['item', location[1]];
+				item.code    = location[1];
+				item.options = [];
+
+				if (menu[location[1]].options) {  // save the selected options to the item
+					for (let i = 0; i < menu[location[1]].options.length; i++) {
+						if (menu[location[1]].options[i].selected) {
+							item.options.push(menu[location[1]].options[i].selected);
+						} else {
+							item.options.push('');
+						}
 					}
 				}
 			}
+		}
+	}
+
+	// order comment
+	if (location[0] == 'orderComment') {
+		if (key == config.keyBinds.backspace) {  // delete a char from the comment
+			order.comment = order.comment.slice(0, -1);
+		} else if (key == config.keyBinds.back || key == config.keyBinds.comment || key == config.keyBinds.confirm) {  // clear the filter string
+			location[0] = 'menu';
+			if (order.comment == '') {
+				order.comment = false;
+			}
+		} else {
+			order.comment += key;
 		}
 	}
 
@@ -195,6 +219,7 @@ function render() {
 
 	// left hand side
 	switch (location[0]) {
+	case 'orderComment':
 	case 'menu':
 		for (const code in submenu) {
 			if (submenu.hasOwnProperty(code)) {
@@ -202,7 +227,11 @@ function render() {
 			}
 		}
 
-		process.stdout.write('\033['+process.stdout.rows+';0H> ' + location[1]);
+		if (location[0] == 'menu') {
+			process.stdout.write('\033['+process.stdout.rows+';0H> ' + location[1] + CURSOR_CHAR);
+		} else {
+			process.stdout.write('\033['+process.stdout.rows+';0H> ' + location[1]);
+		}
 		break;
 
 	case 'item':
@@ -247,15 +276,30 @@ function render() {
 	// each item
 	for (let i = 0; i < order.items.length; i++) {
 		process.stdout.write('\033[' + lineNo + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position cursor
-		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price);
+		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price);  // print NAME xQUANTITY $PRICE
 
 		for (let j = 0; j < order.items[i].options.length; j++) {
-			if (order.items[i].options[j] != '') {
+			if (order.items[i].options[j]) {
 				lineNo++;
 				process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-config.orderWidth) +'H');  // position cursor
 				process.stdout.write(DIM + ' ' + menu[order.items[i].code].options[j].values[order.items[i].options[j]].name + RESET);
 			}
 		}
+
+		lineNo += 2;
+	}
+
+	// order comment
+	if (order.comment !== false) {
+		process.stdout.write('\033[' + lineNo + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position cursor
+		process.stdout.write('COMMENT');
+		lineNo++;
+		process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-config.orderWidth) +'H');  // position cursor
+		process.stdout.write(DIM + ' ' + order.comment);
+		if (location[0] == 'orderComment') {
+			process.stdout.write(CURSOR_CHAR);
+		}
+		process.stdout.write(RESET);
 
 		lineNo += 2;
 	}
