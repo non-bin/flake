@@ -233,20 +233,20 @@ function render() {
 	}
 
 	// right hand side
-	process.stdout.write('\033[1;'+(process.stdout.columns-60)+'H');  // position cursor
+	process.stdout.write('\033[1;'+(process.stdout.columns-config.orderWidth)+'H');  // position cursor
 	process.stdout.write('Order:');  // print title
 
 	lineNo = 3;
 
 	// print each item
 	for (let i = 0; i < order.length; i++) {
-		process.stdout.write('\033[' + lineNo + ';' + (process.stdout.columns-60) + 'H');  // position cursor
+		process.stdout.write('\033[' + lineNo + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position cursor
 		process.stdout.write(menu[order[i].code].name + ' x' + order[i].quantity + ' $' + order[i].price);
 
 		for (let j = 0; j < order[i].options.length; j++) {
 			if (order[i].options[j] != '') {
 				lineNo++;
-				process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-60) +'H');  // position cursor
+				process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-config.orderWidth) +'H');  // position cursor
 				process.stdout.write(DIM + ' ' + menu[order[i].code].options[j].values[order[i].options[j]].name + RESET);
 			}
 		}
