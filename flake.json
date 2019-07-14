@@ -2,11 +2,19 @@
 	"keyBinds": {
 		"comment": "`",
 		"order": "\u0009",
+		"_order": "tab",
 		"quantityInc": ["+", "="],
 		"quantityDec": "-",
-		"back": "\u001b",
+		"back": "\u001b[4~",
+		"_back": "end",
 		"confirm": "\r",
-		"backspace": "\u007f"
+		"_confirm": "enter",
+		"backspace": "\u007f",
+		"delete": "\u001b[3~",
+		"arrUp": "\u001b[a",
+		"arrDown": "\u001b[b",
+		"arrRight": "\u001b[c",
+		"arrLeft": "\u001b[d"
 	},
 	"orderWidth": 30,
 
