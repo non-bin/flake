@@ -160,7 +160,7 @@ process.stdin.on('data', function(key){
 				// add to the order
 				if (typeof(location[1]) === 'number') {  // if the item came from the order
 					order.items[location[1]] = clone(item);  // put it back
-					location = ['order', ''];  // go back to the menu
+					location[0] = 'order';  // go back to the menu
 				} else {
 					order.items.push({});
 					order.items[order.items.length-1] = clone(item);
