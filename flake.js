@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 
-// controll strings
+// controll strings for terminal
 const FG_BLACK    = '\x1b[30m';
 const FG_RED      = '\x1b[31m';
 const FG_GREEN    = '\x1b[32m';
@@ -28,6 +28,28 @@ const RESET       = '\x1b[0m';
 const RESET_POS   = '\033[1;0H';
 const SELECTED    = FG_BLACK + BG_WHITE;
 const CURSOR_CHAR = '\u2588';
+
+// controll strings for printer
+const p = {};
+p.NUL  : '\u0000';         // prefixes
+p.LF   : '\u000A';
+p.ESC  : '\u001B';
+p.GS   : '\u001D';
+p.RESET: p.ESC+'@';        // reset everything
+p.JF_L : p.ESC+'a\u0000';  // justify
+p.JF_C : p.ESC+'a\u0001';
+p.JF_R : p.ESC+'a\u0002';
+p.UL_0 : p.ESC+'-\u0000';  // underline
+p.UL_1 : p.ESC+'-\u0001';
+p.UL_2 : p.ESC+'-\u0002';
+p.BLD_0: p.ESC+'E\u0000';  // bold
+p.BLD_1: p.ESC+'E\u0001';
+p.DS_0 : p.ESC+'G\u0000';  // double strike
+p.DS_1 : p.ESC+'G\u0001';
+p.FNT_0: p.ESC+'M\u0000';  // font
+p.FNT_1: p.ESC+'M\u0001';
+p.FNT_2: p.ESC+'M\u0002';
+
 
 // load config
 const config  = JSON.parse(fs.readFileSync('./flake.json', 'utf8'));  // read and parse the config file
@@ -410,6 +432,18 @@ function render() {
 	err = [];
 }
 
+
+function receptInit(path) {
+	var printer = {};
+	printer.path = path;
+	printer.print = function(data) {
+		fs.writeFile(path, data);
+	}
+
+	printer.print(p.RESET);
+
+	return printer;
+}
 
 /**
  * Filter the menu based on filter string
