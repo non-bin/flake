@@ -78,8 +78,14 @@ process.stdin.on('data', function(key){
 			render();
 			return;
 		} else if (key == config.keyBinds.back) {  // go back
-			location = ['menu', ''];  // go back to the menu
-			key      = '';            // don't register the key press twice
+			if (typeof(location[1] === 'number')) {  // if we came from the order
+				location[0] = 'order';
+				render();
+				return;
+			} else {
+				location = ['menu', ''];  // go back to the menu
+				key      = '';            // don't register the key press twice
+			}
 		} else {
 			// options
 			if (menu[item.code].options) {
@@ -124,32 +130,42 @@ process.stdin.on('data', function(key){
 				}
 
 				// add to the order
-				order.items.push({});
-				Object.assign(order.items[order.items.length-1], item);
+				if (typeof(location[1]) === 'number') {  // if the item came from the order
+					order.items[location[1]] = clone(item);  // put it back
+					location = ['order', ''];  // go back to the menu
+				} else {
+					order.items.push({});
+					order.items[order.items.length-1] = clone(item);
+					location = ['menu', ''];  // go back to the menu
+				}
+
+				key = '';  // don't register key press twice
 
 				// update total price
 				order.price = 0;
 				for (let i = 0; i < order.items.length; i++) {
 					order.price += order.items[i].price;
 				}
-
-				location = ['menu', ''];  // go back to the menu
-				key      = '';            // don't register the key press twice
 			}
 		}
 	}
 
-	// finishing
-	if (location[0] == 'finishing') {
-
-	}
-
 	// menu
 	if (location[0] == 'menu') {
-		if (key == config.keyBinds.comment) {
+		if (key == config.keyBinds.comment) {  // edit the order comment
 			location[0] = 'orderComment';
 			if (order.comment === false) {
 				order.comment = '';
+			}
+			render();
+			return;
+		} else if (key == config.keyBinds.order) {  // select an item in the order to edit
+			if (order.items.length > 0) {  // only if order has at least 1 item
+				location[0] = 'order';
+				location[1] = 0;               // select the first item
+				submenu     = filterMenu('');  // reset the menu filter
+			} else {
+				err.push('unable to edit order, it is empty.');
 			}
 			render();
 			return;
@@ -224,6 +240,39 @@ process.stdin.on('data', function(key){
 		}
 	}
 
+	// order
+	if (location[0] == 'order') {
+		if (key == config.keyBinds.order || key == config.keyBinds.back) {  // return to menu
+			location[0] = 'menu';
+			location[1] = '';
+			render();
+			return;
+		} else if (key == config.keyBinds.confirm) {  // go back to item mode to edit an item
+			item = clone(order.items[location[1]]);  // copy item from order
+			location[0] = 'item';  // move to item mode
+		} else if (key == config.keyBinds.delete || key == config.keyBinds.backspace) {  // delete the item
+			order.items.splice(location[1], 1);
+
+			if (order.items.length == 0) {  // if the order is now empty, return to the menu
+				location[0] = 'menu';
+				location[1] = '';
+				render();
+				return;
+			}
+		} else if (key == config.keyBinds.arrUp) {  // move selection up
+			location[1]--;
+		} else if (key == config.keyBinds.arrDown) {  // move selection down
+			location[1]++;
+		}
+
+		// wrap around
+		if (location[1] < 0) {
+			location[1] = order.items.length-1;
+		} else if (location[1] > order.items.length-1) {
+			location[1] = 0;
+		}
+	}
+
 	render();
 });
 
@@ -245,6 +294,7 @@ function render() {
 	// left hand side
 	switch (location[0]) {
 	case 'orderComment':
+	case 'order':
 	case 'menu':
 		for (const code in submenu) {
 			if (submenu.hasOwnProperty(code)) {
@@ -254,7 +304,7 @@ function render() {
 
 		if (location[0] == 'menu') {
 			process.stdout.write('\033['+process.stdout.rows+';0H> ' + location[1] + CURSOR_CHAR);
-		} else {
+		} else if (location[0] != 'order') {
 			process.stdout.write('\033['+process.stdout.rows+';0H> ' + location[1]);
 		}
 		break;
@@ -310,7 +360,10 @@ function render() {
 	// each item in the order
 	for (let i = 0; i < order.items.length; i++) {
 		process.stdout.write('\033[' + lineNo + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position cursor
-		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price);  // print NAME xQUANTITY $PRICE
+		if (location[0] == 'order' && location[1] == i) {
+			process.stdout.write(SELECTED);  // if the item is selected
+		}
+		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price + RESET);  // print NAME xQUANTITY $PRICE
 
 		for (let j = 0; j < order.items[i].options.length; j++) {
 			if (order.items[i].options[j]) {
@@ -406,10 +459,10 @@ function log(logString) {
 
 
 /**
- * Clone an object iteratively
+ * Clone an object recursively
  *
  * @param {*} obj input object
- * @returns obj with reference removed
+ * @returns obj with references to obj removed
  */
 function clone(obj) {
 	if (null == obj || "object" != typeof obj) return obj;

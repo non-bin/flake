@@ -6,13 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## TODO Next Release
 ### Add
- - ability to edit order
  - name input
  - recept printing
  - manual price input
 
 ## TODO Long Term
 ### Add
+ - credit card machine automation
  - inventory
  - automated ticket system
  - online order system
@@ -28,3 +28,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - total price display
  - comments on order
  - comments on items
+ - ability to edit order
