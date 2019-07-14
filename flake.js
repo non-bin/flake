@@ -3,52 +3,58 @@
 var fs = require('fs');
 
 // controll strings for terminal
-const FG_BLACK    = '\x1b[30m';
-const FG_RED      = '\x1b[31m';
-const FG_GREEN    = '\x1b[32m';
-const FG_YELLOW   = '\x1b[33m';
-const FG_BLUE     = '\x1b[34m';
-const FG_MAGENTA  = '\x1b[35m';
-const FG_CYAN     = '\x1b[36m';
-const FG_WHITE    = '\x1b[37m';
-const BG_BLACK    = '\x1b[40m';
-const BG_RED      = '\x1b[41m';
-const BG_GREEN    = '\x1b[42m';
-const BG_YELLOW   = '\x1b[43m';
-const BG_BLUE     = '\x1b[44m';
-const BG_MAGENTA  = '\x1b[45m';
-const BG_CYAN     = '\x1b[46m';
-const DIM         = '\x1b[2m';
-const BG_WHITE    = '\x1b[47m';
-const CURSOR_HIDE = '\033[?25l';
-const CURSOR_SHOW = '\033[?25h';
-const CLEAR       = '\033[2J';
-const ERASE_LN    = '\033[K';
-const RESET       = '\x1b[0m';
-const RESET_POS   = '\033[1;0H';
-const SELECTED    = FG_BLACK + BG_WHITE;
-const CURSOR_CHAR = '\u2588';
+const t = {};
+
+t.FG_BLACK    = '\x1b[30m';
+t.FG_RED      = '\x1b[31m';
+t.FG_GREEN    = '\x1b[32m';
+t.FG_YELLOW   = '\x1b[33m';
+t.FG_BLUE     = '\x1b[34m';
+t.FG_MAGENTA  = '\x1b[35m';
+t.FG_CYAN     = '\x1b[36m';
+t.FG_WHITE    = '\x1b[37m';
+t.BG_BLACK    = '\x1b[40m';
+t.BG_RED      = '\x1b[41m';
+t.BG_GREEN    = '\x1b[42m';
+t.BG_YELLOW   = '\x1b[43m';
+t.BG_BLUE     = '\x1b[44m';
+t.BG_MAGENTA  = '\x1b[45m';
+t.BG_CYAN     = '\x1b[46m';
+t.DIM         = '\x1b[2m';
+t.BG_WHITE    = '\x1b[47m';
+t.CURSOR_HIDE = '\033[?25l';
+t.CURSOR_SHOW = '\033[?25h';
+t.CLEAR       = '\033[2J';
+t.ERASE_LN    = '\033[K';
+t.RESET       = '\x1b[0m';
+t.RESET_POS   = '\033[1;0H';
+t.SELECTED    = t.FG_BLACK + t.BG_WHITE;
+t.CURSOR_CHAR = '\u2588';
+t.CURSOR_TO   = function(x, y) {
+	process.stdout.write('\033['+x+';'+y+'H');
+}
 
 // controll strings for printer
 const p = {};
-p.NUL  : '\u0000';         // prefixes
-p.LF   : '\u000A';
-p.ESC  : '\u001B';
-p.GS   : '\u001D';
-p.RESET: p.ESC+'@';        // reset everything
-p.JF_L : p.ESC+'a\u0000';  // justify
-p.JF_C : p.ESC+'a\u0001';
-p.JF_R : p.ESC+'a\u0002';
-p.UL_0 : p.ESC+'-\u0000';  // underline
-p.UL_1 : p.ESC+'-\u0001';
-p.UL_2 : p.ESC+'-\u0002';
-p.BLD_0: p.ESC+'E\u0000';  // bold
-p.BLD_1: p.ESC+'E\u0001';
-p.DS_0 : p.ESC+'G\u0000';  // double strike
-p.DS_1 : p.ESC+'G\u0001';
-p.FNT_0: p.ESC+'M\u0000';  // font
-p.FNT_1: p.ESC+'M\u0001';
-p.FNT_2: p.ESC+'M\u0002';
+
+p.NUL   = '\u0000';         // prefixes
+p.LF    = '\u000A';
+p.ESC   = '\u001B';
+p.GS    = '\u001D';
+p.RESET = p.ESC+'@';        // reset everything
+p.JF_L  = p.ESC+'a\u0000';  // justify
+p.JF_C  = p.ESC+'a\u0001';
+p.JF_R  = p.ESC+'a\u0002';
+p.UL_0  = p.ESC+'-\u0000';  // underline
+p.UL_1  = p.ESC+'-\u0001';
+p.UL_2  = p.ESC+'-\u0002';
+p.BLD_0 = p.ESC+'E\u0000';  // bold
+p.BLD_1 = p.ESC+'E\u0001';
+p.DS_0  = p.ESC+'G\u0000';  // double strike
+p.DS_1  = p.ESC+'G\u0001';
+p.FNT_0 = p.ESC+'M\u0000';  // font
+p.FNT_1 = p.ESC+'M\u0001';
+p.FNT_2 = p.ESC+'M\u0002';
 
 
 // load config
@@ -60,7 +66,7 @@ var   submenu = menu;                                                 // load an
 process.stdin.setRawMode(true);  // don't require a newline
 process.stdin.resume();
 process.stdin.setEncoding();        // get usefull feedback
-process.stdout.write(CURSOR_HIDE);  // hide the cursor
+process.stdout.write(t.CURSOR_HIDE);  // hide the cursor
 
 // setup variables
 var location    = ['menu', ''];                                            // where the user is
@@ -78,7 +84,7 @@ process.stdin.on('data', function(key){
 	// give you a way to escape
 	if (exitConfirm) {
 		if (key === '\u0003' || key === '\u0004') {
-			process.stdout.write(CURSOR_SHOW + '\n');  // show the cursor
+			process.stdout.write(t.CURSOR_SHOW + '\n');  // show the cursor
 			process.exit();                            // then exit
 		} else {
 			exitConfirm = false;
@@ -310,7 +316,7 @@ process.stdout.on('resize', () => {
  * Render the display based on location
  */
 function render() {
-	process.stdout.write(RESET + CLEAR + RESET_POS);  // clear and reset
+	process.stdout.write(t.RESET + t.CLEAR + t.RESET_POS);  // clear and reset
 	var lineNo = 0;
 
 	// left hand side
@@ -325,9 +331,11 @@ function render() {
 		}
 
 		if (location[0] == 'menu') {
-			process.stdout.write('\033['+process.stdout.rows+';0H> ' + location[1] + CURSOR_CHAR);
+			t.CURSOR_TO(process.stdout.rows, 0);
+			process.stdout.write('> ' + location[1] + t.CURSOR_CHAR);
 		} else if (location[0] != 'order') {
-			process.stdout.write('\033['+process.stdout.rows+';0H> ' + location[1]);
+			t.CURSOR_TO(process.stdout.rows, 0);
+			process.stdout.write('> ' + location[1]);
 		}
 		break;
 
@@ -351,7 +359,7 @@ function render() {
 						}
 
 						if (item.options[i] == code) {
-							process.stdout.write(SELECTED + code + ' - ' + menu[item.code].options[i].values[code].name + price + RESET + '  ');
+							process.stdout.write(t.SELECTED + code + ' - ' + menu[item.code].options[i].values[code].name + price + t.RESET + '  ');
 						} else {
 							process.stdout.write(code + ' - ' + menu[item.code].options[i].values[code].name + price + '  ');
 						}
@@ -365,7 +373,7 @@ function render() {
 		if (item.comment !== false) {
 			process.stdout.write('COMMENT:\n' + item.comment);
 			if (location[0] == 'itemComment') {
-				process.stdout.write(CURSOR_CHAR);
+				process.stdout.write(t.CURSOR_CHAR);
 			}
 		}
 
@@ -374,30 +382,30 @@ function render() {
 
 
 	// right hand side
-	process.stdout.write('\033[1;'+(process.stdout.columns-config.orderWidth)+'H');  // position cursor
+	t.CURSOR_TO(1, process.stdout.columns-config.orderWidth);  // position cursor
 	process.stdout.write('Order:');  // print title
 
 	lineNo = 3;
 
 	// each item in the order
 	for (let i = 0; i < order.items.length; i++) {
-		process.stdout.write('\033[' + lineNo + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position cursor
+		t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
 		if (location[0] == 'order' && location[1] == i) {
-			process.stdout.write(SELECTED);  // if the item is selected
+			process.stdout.write(t.SELECTED);  // if the item is selected
 		}
-		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price + RESET);  // print NAME xQUANTITY $PRICE
+		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price + t.RESET);  // print NAME xQUANTITY $PRICE
 
 		for (let j = 0; j < order.items[i].options.length; j++) {
 			if (order.items[i].options[j]) {
 				lineNo++;
-				process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-config.orderWidth) +'H');  // position cursor
-				process.stdout.write(DIM + ' ' + menu[order.items[i].code].options[j].values[order.items[i].options[j]].name + RESET);
+				t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
+				process.stdout.write(t.DIM + ' ' + menu[order.items[i].code].options[j].values[order.items[i].options[j]].name + t.RESET);
 			}
 		}
 		if (order.items[i].comment) {  // if the item has a comment
 			lineNo++;
-			process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-config.orderWidth) +'H');  // position cursor
-			process.stdout.write(DIM + ' ' + order.items[i].comment + RESET);
+			t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
+			process.stdout.write(t.DIM + ' ' + order.items[i].comment + t.RESET);
 		}
 
 		lineNo += 2;
@@ -405,30 +413,32 @@ function render() {
 
 	// order comment
 	if (order.comment !== false) {
-		process.stdout.write('\033[' + lineNo + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position cursor
+		t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
 		process.stdout.write('COMMENT');
 		lineNo++;
-		process.stdout.write('\033['+ lineNo +';'+ (process.stdout.columns-config.orderWidth) +'H');  // position cursor
-		process.stdout.write(DIM + ' ' + order.comment);
+		t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
+		process.stdout.write(t.DIM + ' ' + order.comment);
 		if (location[0] == 'orderComment') {
-			process.stdout.write(CURSOR_CHAR);
+			process.stdout.write(t.CURSOR_CHAR);
 		}
-		process.stdout.write(RESET);
+		process.stdout.write(t.RESET);
 
 		lineNo += 2;
 	}
 
 	// total price
-	process.stdout.write('\033[' + process.stdout.rows + ';' + (process.stdout.columns-config.orderWidth) + 'H');  // position at the bottom of the order
+	t.CURSOR_TO(process.stdout.rows, process.stdout.columns-config.orderWidth);  // position at the bottom of the order
 	process.stdout.write('Price: $' + order.price);
 
 
 	// errors
-	process.stdout.write('\033['+process.stdout.rows+';0H' + FG_RED);  // move to bottom left and set to red
+	t.CURSOR_TO(process.stdout.rows,0);
+	process.stdout.write(t.FG_RED);  // move to bottom left and set to red
 	for (let i = 0; i < err.length; i++) {
-		process.stdout.write(ERASE_LN + err[i] + '\033[' + process.stdout.rows + ';0H\033[' + (i+1) + 'A');  // erase line, print message, and move up 1
+		process.stdout.write(t.ERASE_LN + err[i]);
+		t.CURSOR_TO(process.stdout.rows-i, 0);// erase line, print message, and move up 1
 	}
-	process.stdout.write(RESET);
+	process.stdout.write(t.RESET);
 	err = [];
 }
 
