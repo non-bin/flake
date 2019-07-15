@@ -4,7 +4,8 @@
   "description": "Command line POS system",
   "main": "flake.js",
   "scripts": {
-    "test": "/usr/bin/node --inspect-brk=9229 flake.js"
+    "test": "/usr/bin/node --inspect-brk=9229 src/flake.js",
+    "start": "/usr/bin/node src/flake.js"
   },
   "repository": {
     "type": "git",

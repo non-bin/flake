@@ -1,42 +1,10 @@
 #!/usr/bin/node
 
 var fs = require('fs');
+const render = require('./render').render;
 
-// controll strings for terminal
-const t = {};
-
-t.FG_BLACK    = '\x1b[30m';
-t.FG_RED      = '\x1b[31m';
-t.FG_GREEN    = '\x1b[32m';
-t.FG_YELLOW   = '\x1b[33m';
-t.FG_BLUE     = '\x1b[34m';
-t.FG_MAGENTA  = '\x1b[35m';
-t.FG_CYAN     = '\x1b[36m';
-t.FG_WHITE    = '\x1b[37m';
-t.BG_BLACK    = '\x1b[40m';
-t.BG_RED      = '\x1b[41m';
-t.BG_GREEN    = '\x1b[42m';
-t.BG_YELLOW   = '\x1b[43m';
-t.BG_BLUE     = '\x1b[44m';
-t.BG_MAGENTA  = '\x1b[45m';
-t.BG_CYAN     = '\x1b[46m';
-t.DIM         = '\x1b[2m';
-t.BG_WHITE    = '\x1b[47m';
-t.CURSOR_HIDE = '\033[?25l';
-t.CURSOR_SHOW = '\033[?25h';
-t.CLEAR       = '\033[2J';
-t.ERASE_LN    = '\033[K';
-t.RESET       = '\x1b[0m';
-t.RESET_POS   = '\033[1;0H';
-t.SELECTED    = t.FG_BLACK + t.BG_WHITE;
-t.CURSOR_CHAR = '\u2588';
-t.CURSOR_TO   = function(x, y) {
-	process.stdout.write('\033['+x+';'+y+'H');
-}
-
-// controll strings for printer
-const p = {};
-
+// controll strings
+const p = {};  // printer
 p.NUL   = '\u0000';         // prefixes
 p.LF    = '\u000A';
 p.ESC   = '\u001B';
@@ -57,6 +25,10 @@ p.FNT_1 = p.ESC+'M\u0001';
 p.FNT_2 = p.ESC+'M\u0002';
 
 
+CURSOR_HIDE = '\033[?25l';
+CURSOR_SHOW = '\033[?25h';
+
+
 // load config
 const config  = JSON.parse(fs.readFileSync('./flake.json', 'utf8'));  // read and parse the config file
 const menu    = sortByKey(config.menu);                               // sort the menu
@@ -66,16 +38,16 @@ var   submenu = menu;                                                 // load an
 process.stdin.setRawMode(true);  // don't require a newline
 process.stdin.resume();
 process.stdin.setEncoding();        // get usefull feedback
-process.stdout.write(t.CURSOR_HIDE);  // hide the cursor
+process.stdout.write(CURSOR_HIDE);  // hide the cursor
 
 // setup variables
 var location    = ['menu', ''];                                            // where the user is
-var order       = {'price': 0, 'items': [], 'comment': false};             // store the order
+var order       = {'price': 0, 'items': [], 'comment': false, name: '', date: 0};             // store the order
 var item        = {'code': '', 'options': [], 'quantity': 1, 'price': 0, 'comment': false};  // information on the current item
 var exitConfirm = false;                                                   // require 2 ^c/^d to exit
 var err         = [];                                                      // store errors to be rendered
 
-render();  // render the initial screen
+render(location, submenu, config, order, err, menu, item);  // render the initial screen
 
 // when a key is pressed
 process.stdin.on('data', function(key){
@@ -84,7 +56,7 @@ process.stdin.on('data', function(key){
 	// give you a way to escape
 	if (exitConfirm) {
 		if (key === '\u0003' || key === '\u0004') {
-			process.stdout.write(t.CURSOR_SHOW + '\n');  // show the cursor
+			process.stdout.write(CURSOR_SHOW + '\n');  // show the cursor
 			process.exit();                            // then exit
 		} else {
 			exitConfirm = false;
@@ -92,7 +64,7 @@ process.stdin.on('data', function(key){
 	} else if (key === '\u0003' || key === '\u0004') {
 		exitConfirm = true;
 		err.push('To exit, press ^C again or ^D');  // confirm the exit
-		render();
+		render(location, submenu, config, order, err, menu, item);
 		return;
 	}
 
@@ -103,12 +75,12 @@ process.stdin.on('data', function(key){
 			if (item.comment === false) {
 				item.comment = '';
 			}
-			render();
+			render(location, submenu, config, order, err, menu, item);
 			return;
 		} else if (key == config.keyBinds.back) {  // go back
 			if (typeof(location[1] === 'number')) {  // if we came from the order
 				location[0] = 'order';
-				render();
+				render(location, submenu, config, order, err, menu, item);
 				return;
 			} else {
 				location = ['menu', ''];  // go back to the menu
@@ -185,7 +157,17 @@ process.stdin.on('data', function(key){
 			if (order.comment === false) {
 				order.comment = '';
 			}
-			render();
+			render(location, submenu, config, order, err, menu, item);
+			return;
+		} else if (key == config.keyBinds.confirm) {  // finishing
+			if (order.items.length == 0) {
+				err.push('Cannot finish order, it is empty.');
+				render(location, submenu, config, order, err, menu, item);
+				return;
+			}
+
+			location = ['finish', false];
+			render(location, submenu, config, order, err, menu, item);
 			return;
 		} else if (key == config.keyBinds.order) {  // select an item in the order to edit
 			if (order.items.length > 0) {  // only if order has at least 1 item
@@ -195,7 +177,7 @@ process.stdin.on('data', function(key){
 			} else {
 				err.push('unable to edit order, it is empty.');
 			}
-			render();
+			render(location, submenu, config, order, err, menu, item);
 			return;
 		} else {
 			if (key == config.keyBinds.backspace) {  // delete a filter char
@@ -273,7 +255,7 @@ process.stdin.on('data', function(key){
 		if (key == config.keyBinds.order || key == config.keyBinds.back) {  // return to menu
 			location[0] = 'menu';
 			location[1] = '';
-			render();
+			render(location, submenu, config, order, err, menu, item);
 			return;
 		} else if (key == config.keyBinds.confirm) {  // go back to item mode to edit an item
 			item = clone(order.items[location[1]]);  // copy item from order
@@ -284,7 +266,7 @@ process.stdin.on('data', function(key){
 			if (order.items.length == 0) {  // if the order is now empty, return to the menu
 				location[0] = 'menu';
 				location[1] = '';
-				render();
+				render(location, submenu, config, order, err, menu, item);
 				return;
 			}
 		} else if (key == config.keyBinds.arrUp) {  // move selection up
@@ -301,146 +283,15 @@ process.stdin.on('data', function(key){
 		}
 	}
 
-	render();
+	render(location, submenu, config, order, err, menu, item);
 });
 
 /**
  * Respond to resizes
  */
 process.stdout.on('resize', () => {
-	render();
+	render(location, submenu, config, order, err, menu, item);
 });
-
-
-/**
- * Render the display based on location
- */
-function render() {
-	process.stdout.write(t.RESET + t.CLEAR + t.RESET_POS);  // clear and reset
-	var lineNo = 0;
-
-	// left hand side
-	switch (location[0]) {
-	case 'orderComment':
-	case 'order':
-	case 'menu':
-		for (const code in submenu) {
-			if (submenu.hasOwnProperty(code)) {
-				process.stdout.write(code + '	- ' + submenu[code].name + '\n');
-			}
-		}
-
-		if (location[0] == 'menu') {
-			t.CURSOR_TO(process.stdout.rows, 0);
-			process.stdout.write('> ' + location[1] + t.CURSOR_CHAR);
-		} else if (location[0] != 'order') {
-			t.CURSOR_TO(process.stdout.rows, 0);
-			process.stdout.write('> ' + location[1]);
-		}
-		break;
-
-	case 'itemComment':
-	case 'item':
-		process.stdout.write(menu[item.code].name + '\n\n');  // name
-		process.stdout.write('Quantity: ' + item.quantity + '\n\n');  // quantity
-
-		if (menu[item.code].options) {
-			for (let i = 0; i < menu[item.code].options.length; i++) {
-				process.stdout.write(menu[item.code].options[i].name + '\n');  // option name
-
-				for (const code in menu[item.code].options[i].values) {
-					if (menu[item.code].options[i].values.hasOwnProperty(code)) {
-						if (menu[item.code].options[i].values[code].price > 0) {
-							price = ' (+$' + Math.abs(menu[item.code].options[i].values[code].price) + ')';
-						} else if (menu[item.code].options[i].values[code].price < 0) {
-							price = ' (-$' + Math.abs(menu[item.code].options[i].values[code].price) + ')';
-						} else {
-							price = '';
-						}
-
-						if (item.options[i] == code) {
-							process.stdout.write(t.SELECTED + code + ' - ' + menu[item.code].options[i].values[code].name + price + t.RESET + '  ');
-						} else {
-							process.stdout.write(code + ' - ' + menu[item.code].options[i].values[code].name + price + '  ');
-						}
-					}
-				}
-
-				process.stdout.write('\n\n');
-			}
-		}
-
-		if (item.comment !== false) {
-			process.stdout.write('COMMENT:\n' + item.comment);
-			if (location[0] == 'itemComment') {
-				process.stdout.write(t.CURSOR_CHAR);
-			}
-		}
-
-		break;
-	}
-
-
-	// right hand side
-	t.CURSOR_TO(1, process.stdout.columns-config.orderWidth);  // position cursor
-	process.stdout.write('Order:');  // print title
-
-	lineNo = 3;
-
-	// each item in the order
-	for (let i = 0; i < order.items.length; i++) {
-		t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
-		if (location[0] == 'order' && location[1] == i) {
-			process.stdout.write(t.SELECTED);  // if the item is selected
-		}
-		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price + t.RESET);  // print NAME xQUANTITY $PRICE
-
-		for (let j = 0; j < order.items[i].options.length; j++) {
-			if (order.items[i].options[j]) {
-				lineNo++;
-				t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
-				process.stdout.write(t.DIM + ' ' + menu[order.items[i].code].options[j].values[order.items[i].options[j]].name + t.RESET);
-			}
-		}
-		if (order.items[i].comment) {  // if the item has a comment
-			lineNo++;
-			t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
-			process.stdout.write(t.DIM + ' ' + order.items[i].comment + t.RESET);
-		}
-
-		lineNo += 2;
-	}
-
-	// order comment
-	if (order.comment !== false) {
-		t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
-		process.stdout.write('COMMENT');
-		lineNo++;
-		t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
-		process.stdout.write(t.DIM + ' ' + order.comment);
-		if (location[0] == 'orderComment') {
-			process.stdout.write(t.CURSOR_CHAR);
-		}
-		process.stdout.write(t.RESET);
-
-		lineNo += 2;
-	}
-
-	// total price
-	t.CURSOR_TO(process.stdout.rows, process.stdout.columns-config.orderWidth);  // position at the bottom of the order
-	process.stdout.write('Price: $' + order.price);
-
-
-	// errors
-	t.CURSOR_TO(process.stdout.rows,0);
-	process.stdout.write(t.FG_RED);  // move to bottom left and set to red
-	for (let i = 0; i < err.length; i++) {
-		process.stdout.write(t.ERASE_LN + err[i]);
-		t.CURSOR_TO(process.stdout.rows-i, 0);// erase line, print message, and move up 1
-	}
-	process.stdout.write(t.RESET);
-	err = [];
-}
 
 
 function receptInit(path) {
