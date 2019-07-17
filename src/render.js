@@ -93,6 +93,16 @@ module.exports.render = function(location, submenu, config, order, err, menu, it
 		}
 
 		break;
+
+	case 'finish':
+		process.stdout.write('Finish Order\n\n');  // title
+
+		process.stdout.write('Name: '+order.name);  // name input
+		if (location[1] == 'name') process.stdout.write(t.CURSOR_CHAR);  // if currently editing the name
+		process.stdout.write('\n\n');
+
+		process.stdout.write('Payment:');
+		break;
 	}
 
 

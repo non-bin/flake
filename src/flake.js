@@ -142,6 +142,34 @@ process.stdin.on('data', function(key){
 		}
 	}
 
+
+	// finishing
+	if (location[0] == 'finish') {
+		if (location[1] == 'name') {
+			if (keyLower == config.keyBinds.backspace) {  // delete a char from the name
+				order.name = order.name.slice(0, -1);
+			} else if (keyLower == config.keyBinds.back) {  // go back to the menu
+				location = ['menu', ''];
+				renderWrap();
+				return;
+			} else if (keyLower == config.keyBinds.confirm) {  // confirm and go to the next stage of finishing
+				// location = ['finish', 'pay', 'cash'];
+				// renderWrap();
+				receptWrapper('ticket', order);
+				return;
+			} else {
+				order.name += key;  // we want case sensitivity so use key
+			}
+		} else if (location[1] == 'pay') {
+			if (keyLower == config.keyBinds.back) {  // go back to name
+				location[1] = 'name';
+				renderWrap();
+				return;
+			}
+		}
+	}
+
+
 	// menu
 	if (location[0] == 'menu') {
 		if (keyLower == config.keyBinds.comment) {  // edit the order comment
@@ -362,4 +390,12 @@ function clone(obj) {
  */
 function renderWrap() {
 	render(location, submenu, config, order, err, menu, item);
+}
+
+function receptWrapper(type, content, options = undefined) {
+	if (options) {
+		printRecept(type, content, location, submenu, config, order, err, menu, item, options);
+	} else {
+		printRecept(type, content, location, submenu, config, order, err, menu, item);
+	}
 }
