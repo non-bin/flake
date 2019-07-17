@@ -56,7 +56,7 @@ module.exports.render = function(location, submenu, config, order, err, menu, it
 
 	case 'itemComment':
 	case 'item':
-		process.stdout.write(menu[item.code].name + '\n\n');  // name
+		process.stdout.write(menu[item.code].name + ' $'+menu[item.code].price.toFixed(2)+'\n\n');  // name
 		process.stdout.write('Quantity: ' + item.quantity + '\n\n');  // quantity
 
 		if (menu[item.code].options) {
@@ -108,7 +108,7 @@ module.exports.render = function(location, submenu, config, order, err, menu, it
 		if (location[0] == 'order' && location[1] == i) {
 			process.stdout.write(t.SELECTED);  // if the item is selected
 		}
-		process.stdout.write(menu[order.items[i].code].name + ' x' + order.items[i].quantity + ' $' + order.items[i].price + t.RESET);  // print NAME xQUANTITY $PRICE
+		process.stdout.write('x' + order.items[i].quantity+' '+menu[order.items[i].code].name + ' $' + order.items[i].price.toFixed(2) + t.RESET);  // print NAME xQUANTITY $PRICE
 
 		for (let j = 0; j < order.items[i].options.length; j++) {
 			if (order.items[i].options[j]) {
@@ -151,7 +151,7 @@ module.exports.render = function(location, submenu, config, order, err, menu, it
 
 	// total price
 	t.CURSOR_TO(process.stdout.rows, process.stdout.columns-config.orderWidth);  // position at the bottom of the order
-	process.stdout.write('Price: $' + order.price);
+	process.stdout.write('Price: $' + order.price.toFixed(2));
 
 
 	// errors
