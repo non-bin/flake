@@ -14,7 +14,9 @@
 		"arrUp": "\u001b[a",
 		"arrDown": "\u001b[b",
 		"arrRight": "\u001b[c",
-		"arrLeft": "\u001b[d"
+		"arrLeft": "\u001b[d",
+		"payCard": "c",
+		"payLater": "l"
 	},
 	"orderWidth": 30,
 
@@ -47,7 +49,7 @@
 		},
 		"fs": {
 			"type": "item",
-			"name": "Salmon (Grilled)",
+			"name": "Salmon",
 			"price": 6
 		},
 		"ds": {
@@ -75,7 +77,20 @@
 				{
 					"type": "toggle",
 					"name": "Discounts",
-					"values": {"1": {"name": "One", "price": -1}, "2": {"name": "Three", "price": -3}, "3": {"name": "Five", "price": -5}}
+					"values": {"1": {"name": "One", "price": -1}, "2": {"name": "Three", "price": -3.3}, "3": {"name": "Five", "price": -5}}
+				}
+			]
+		},
+		"ch": {
+			"type": "item",
+			"name": "Chips",
+			"price": 4,
+			"options": [
+				{
+					"type": "radio",
+					"name": "Size",
+					"selected": "s",
+					"values": {"s": {"name": "Small"}, "m": {"name": "Medium", "price": 2}, "l": {"name": "Large", "price": 4}}
 				}
 			]
 		}
