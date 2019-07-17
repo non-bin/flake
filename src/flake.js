@@ -75,11 +75,11 @@ process.stdin.on('data', function(key){
 					for (const code in menu[item.code].options[i].values) {  // for each value
 						if (menu[item.code].options[i].values.hasOwnProperty(code)) {
 							if (code == keyLower) {
-								if (menu[item.code].options[i].type == 'toggle') {  // if the potion is a toggle
-									if (item.options[i] == keyLower) {  // toggle it
-										item.options[i] = '';
+								if (menu[item.code].options[i].type == 'toggle') {  // if the option is a toggle
+									if (item.options[i].includes(keyLower)) {  // toggle it
+										item.options[i].splice(item.options[i].indexOf(keyLower), 1);
 									} else {
-										item.options[i] = keyLower;
+										item.options[i].push(keyLower);
 									}
 								} else {  // if not, set it
 									item.options[i] = keyLower;
@@ -102,8 +102,18 @@ process.stdin.on('data', function(key){
 				// calculate price
 				item.price = menu[item.code].price;  // set the initial price
 				for (let i = 0; i < item.options.length; i++) {  // apply the price of each option
-					if (item.options[i] && menu[item.code].options[i].values[item.options[i]].price) {
-						item.price += menu[item.code].options[i].values[item.options[i]].price;
+					if (item.options[i]) {
+						if (menu[item.code].options[i].type == 'toggle') {
+							for (let j = 0; j < item.options[i].length; j++) {
+								if (menu[item.code].options[i].values[item.options[i][j]].price) {
+									item.price += menu[item.code].options[i].values[item.options[i][j]].price;
+								}
+							}
+						} else {
+							if (menu[item.code].options[i].values[item.options[i]].price) {
+								item.price += menu[item.code].options[i].values[item.options[i]].price;
+							}
+						}
 					}
 				}
 				item.price *= item.quantity;  // take into account quantity
@@ -193,10 +203,18 @@ process.stdin.on('data', function(key){
 
 				if (menu[location[1]].options) {  // save the selected options to the item
 					for (let i = 0; i < menu[location[1]].options.length; i++) {
-						if (menu[location[1]].options[i].selected) {
-							item.options.push(menu[location[1]].options[i].selected);
+						if (menu[location[1]].options[i].type == 'toggle') {
+							if (menu[location[1]].options[i].selected) {
+								item.options.push(menu[location[1]].options[i].selected);
+							} else {
+								item.options.push([]);
+							}
 						} else {
-							item.options.push('');
+							if (menu[location[1]].options[i].selected) {
+								item.options.push(menu[location[1]].options[i].selected);
+							} else {
+								item.options.push('');
+							}
 						}
 					}
 				}

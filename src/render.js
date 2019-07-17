@@ -73,7 +73,7 @@ module.exports.render = function(location, submenu, config, order, err, menu, it
 							price = '';
 						}
 
-						if (item.options[i] == code) {
+						if (item.options[i].includes(code)) {
 							process.stdout.write(t.SELECTED + code + ' - ' + menu[item.code].options[i].values[code].name + price + t.RESET + '  ');
 						} else {
 							process.stdout.write(code + ' - ' + menu[item.code].options[i].values[code].name + price + '  ');
@@ -112,9 +112,17 @@ module.exports.render = function(location, submenu, config, order, err, menu, it
 
 		for (let j = 0; j < order.items[i].options.length; j++) {
 			if (order.items[i].options[j]) {
-				lineNo++;
-				t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
-				process.stdout.write(t.DIM + ' ' + menu[order.items[i].code].options[j].values[order.items[i].options[j]].name + t.RESET);
+				if (menu[order.items[i].code].options[j].type == 'toggle') {
+					for (let k = 0; k < order.items[i].options[j].length; k++) {
+						lineNo++;
+						t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
+						process.stdout.write(t.DIM + ' ' + menu[order.items[i].code].options[j].values[order.items[i].options[j][k]].name + t.RESET);
+					}
+				} else {
+					lineNo++;
+					t.CURSOR_TO(lineNo, process.stdout.columns-config.orderWidth);  // position cursor
+					process.stdout.write(t.DIM + ' ' + menu[order.items[i].code].options[j].values[order.items[i].options[j]].name + t.RESET);
+				}
 			}
 		}
 		if (order.items[i].comment) {  // if the item has a comment
