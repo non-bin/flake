@@ -31,7 +31,7 @@ renderWrap();  // render the initial screen
 
 // when a key is pressed
 process.stdin.on('data', function(key){
-	keyLower = key.toLowerCase();
+	var keyLower = key.toLowerCase();
 
 	// give you a way to escape
 	if (exitConfirm) {
@@ -182,8 +182,8 @@ process.stdin.on('data', function(key){
 			}
 
 			// if only one item is left
-			if (Object.keys(submenu).length == 1) {
-				location     = ['item', location[1]];
+			if (Object.keys(submenu).length == 1 && Object.keys(submenu)[0] == location[1]) {
+				location     = ['item', Object.keys(submenu)[0]];
 
 				// reset the item variable
 				item.code     = location[1];
