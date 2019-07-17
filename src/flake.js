@@ -1,30 +1,10 @@
 #!/usr/bin/node
 
-var fs = require('fs');
-const render = require('./render').render;
+var   fs          = require('fs');
+const render      = require('./render.js').render;
+const printRecept = require('./print.js').printRecept;
 
 // controll strings
-const p = {};  // printer
-p.NUL   = '\u0000';         // prefixes
-p.LF    = '\u000A';
-p.ESC   = '\u001B';
-p.GS    = '\u001D';
-p.RESET = p.ESC+'@';        // reset everything
-p.JF_L  = p.ESC+'a\u0000';  // justify
-p.JF_C  = p.ESC+'a\u0001';
-p.JF_R  = p.ESC+'a\u0002';
-p.UL_0  = p.ESC+'-\u0000';  // underline
-p.UL_1  = p.ESC+'-\u0001';
-p.UL_2  = p.ESC+'-\u0002';
-p.BLD_0 = p.ESC+'E\u0000';  // bold
-p.BLD_1 = p.ESC+'E\u0001';
-p.DS_0  = p.ESC+'G\u0000';  // double strike
-p.DS_1  = p.ESC+'G\u0001';
-p.FNT_0 = p.ESC+'M\u0000';  // font
-p.FNT_1 = p.ESC+'M\u0001';
-p.FNT_2 = p.ESC+'M\u0002';
-
-
 CURSOR_HIDE = '\033[?25l';
 CURSOR_SHOW = '\033[?25h';
 
@@ -293,18 +273,6 @@ process.stdout.on('resize', () => {
 	render(location, submenu, config, order, err, menu, item);
 });
 
-
-function receptInit(path) {
-	var printer = {};
-	printer.path = path;
-	printer.print = function(data) {
-		fs.writeFile(path, data);
-	}
-
-	printer.print(p.RESET);
-
-	return printer;
-}
 
 /**
  * Filter the menu based on filter string
