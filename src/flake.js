@@ -22,49 +22,51 @@ process.stdout.write(CURSOR_HIDE);  // hide the cursor
 
 // setup variables
 var location    = ['menu', ''];                                            // where the user is
-var order       = {'price': 0, 'items': [], 'comment': false, name: '', date: 0};             // store the order
+var order       = {'price': 0, 'items': [], 'comment': false, 'name': '', 'date': 0};             // store the order
 var item        = {'code': '', 'options': [], 'quantity': 1, 'price': 0, 'comment': false};  // information on the current item
 var exitConfirm = false;                                                   // require 2 ^c/^d to exit
 var err         = [];                                                      // store errors to be rendered
 
-render(location, submenu, config, order, err, menu, item);  // render the initial screen
+renderWrap();  // render the initial screen
 
 // when a key is pressed
 process.stdin.on('data', function(key){
-	key = key.toLowerCase();
+	keyLower = key.toLowerCase();
 
 	// give you a way to escape
 	if (exitConfirm) {
-		if (key === '\u0003' || key === '\u0004') {
+		if (keyLower === '\u0003' || keyLower === '\u0004') {
 			process.stdout.write(CURSOR_SHOW + '\n');  // show the cursor
 			process.exit();                            // then exit
 		} else {
 			exitConfirm = false;
 		}
-	} else if (key === '\u0003' || key === '\u0004') {
+	} else if (keyLower === '\u0003' || keyLower === '\u0004') {
 		exitConfirm = true;
 		err.push('To exit, press ^C again or ^D');  // confirm the exit
-		render(location, submenu, config, order, err, menu, item);
+		renderWrap();
 		return;
 	}
 
 	// item
 	if (location[0] == 'item') {
-		if (key == config.keyBinds.comment) {  // add a comment
+		if (keyLower == config.keyBinds.comment) {  // add a comment
 			location[0] = 'itemComment';
 			if (item.comment === false) {
 				item.comment = '';
 			}
-			render(location, submenu, config, order, err, menu, item);
+			renderWrap();
 			return;
-		} else if (key == config.keyBinds.back) {  // go back
-			if (typeof(location[1] === 'number')) {  // if we came from the order
+		} else if (keyLower == config.keyBinds.back) {  // go back
+			if (typeof(location[1]) === 'number') {  // if we came from the order
 				location[0] = 'order';
-				render(location, submenu, config, order, err, menu, item);
+				renderWrap();
 				return;
 			} else {
-				location = ['menu', ''];  // go back to the menu
-				key      = '';            // don't register the key press twice
+				location = ['menu', ''];    // go back to the menu
+				submenu  = filterMenu('');  // reset the menu filter
+				renderWrap();
+				return;
 			}
 		} else {
 			// options
@@ -72,15 +74,15 @@ process.stdin.on('data', function(key){
 				for (let i = 0; i < menu[item.code].options.length; i++) {  // for each set of options
 					for (const code in menu[item.code].options[i].values) {  // for each value
 						if (menu[item.code].options[i].values.hasOwnProperty(code)) {
-							if (code == key) {
+							if (code == keyLower) {
 								if (menu[item.code].options[i].type == 'toggle') {  // if the potion is a toggle
-									if (item.options[i] == key) {  // toggle it
+									if (item.options[i] == keyLower) {  // toggle it
 										item.options[i] = '';
 									} else {
-										item.options[i] = key;
+										item.options[i] = keyLower;
 									}
 								} else {  // if not, set it
-									item.options[i] = key;
+									item.options[i] = keyLower;
 								}
 							}
 						}
@@ -89,14 +91,14 @@ process.stdin.on('data', function(key){
 			}
 
 			// quantity
-			if (config.keyBinds.quantityInc.includes(key)) {  // increment
+			if (config.keyBinds.quantityInc.includes(keyLower)) {  // increment
 				item.quantity++;
-			} else if (config.keyBinds.quantityDec.includes(key) && item.quantity > 1) {  // decrement
+			} else if (config.keyBinds.quantityDec.includes(keyLower) && item.quantity > 1) {  // decrement
 				item.quantity--;
 			}
 
 			// add to order
-			if (key == config.keyBinds.confirm) {
+			if (keyLower == config.keyBinds.confirm) {
 				// calculate price
 				item.price = menu[item.code].price;  // set the initial price
 				for (let i = 0; i < item.options.length; i++) {  // apply the price of each option
@@ -119,7 +121,7 @@ process.stdin.on('data', function(key){
 					location = ['menu', ''];  // go back to the menu
 				}
 
-				key = '';  // don't register key press twice
+				keyLower = '';  // don't register key press twice
 
 				// update total price
 				order.price = 0;
@@ -132,24 +134,24 @@ process.stdin.on('data', function(key){
 
 	// menu
 	if (location[0] == 'menu') {
-		if (key == config.keyBinds.comment) {  // edit the order comment
+		if (keyLower == config.keyBinds.comment) {  // edit the order comment
 			location[0] = 'orderComment';
 			if (order.comment === false) {
 				order.comment = '';
 			}
-			render(location, submenu, config, order, err, menu, item);
+			renderWrap();
 			return;
-		} else if (key == config.keyBinds.confirm) {  // finishing
+		} else if (keyLower == config.keyBinds.confirm) {  // finishing
 			if (order.items.length == 0) {
 				err.push('Cannot finish order, it is empty.');
-				render(location, submenu, config, order, err, menu, item);
+				renderWrap();
 				return;
 			}
 
-			location = ['finish', false];
-			render(location, submenu, config, order, err, menu, item);
+			location = ['finish', 'name'];
+			renderWrap();
 			return;
-		} else if (key == config.keyBinds.order) {  // select an item in the order to edit
+		} else if (keyLower == config.keyBinds.order) {  // select an item in the order to edit
 			if (order.items.length > 0) {  // only if order has at least 1 item
 				location[0] = 'order';
 				location[1] = 0;               // select the first item
@@ -157,15 +159,15 @@ process.stdin.on('data', function(key){
 			} else {
 				err.push('unable to edit order, it is empty.');
 			}
-			render(location, submenu, config, order, err, menu, item);
+			renderWrap();
 			return;
 		} else {
-			if (key == config.keyBinds.backspace) {  // delete a filter char
+			if (keyLower == config.keyBinds.backspace) {  // delete a filter char
 				location[1] = location[1].slice(0, -1);
-			} else if (key == config.keyBinds.back) {  // clear the filter string
+			} else if (keyLower == config.keyBinds.back) {  // clear the filter string
 				location[1] = '';
 			} else {
-				location[1] += key;
+				location[1] += keyLower;
 			}
 
 			// filter the menu based on input string
@@ -204,54 +206,54 @@ process.stdin.on('data', function(key){
 
 	// order comment
 	if (location[0] == 'orderComment') {
-		if (key == config.keyBinds.backspace) {  // delete a char from the comment
+		if (keyLower == config.keyBinds.backspace) {  // delete a char from the comment
 			order.comment = order.comment.slice(0, -1);
-		} else if (key == config.keyBinds.back || key == config.keyBinds.comment || key == config.keyBinds.confirm) {  // clear the filter string
+		} else if (keyLower == config.keyBinds.back || keyLower == config.keyBinds.comment || keyLower == config.keyBinds.confirm) {  // clear the filter string
 			location[0] = 'menu';
 			if (order.comment == '') {
 				order.comment = false;
 			}
 		} else {
-			order.comment += key;
+			order.comment += key;  // we want case sensitivity so use key
 		}
 	}
 
 	// item comment
 	if (location[0] == 'itemComment') {
-		if (key == config.keyBinds.backspace) {  // delete a char from the comment
+		if (keyLower == config.keyBinds.backspace) {  // delete a char from the comment
 			item.comment = item.comment.slice(0, -1);
-		} else if (key == config.keyBinds.back || key == config.keyBinds.comment || key == config.keyBinds.confirm) {  // clear the filter string
+		} else if (keyLower == config.keyBinds.back || keyLower == config.keyBinds.comment || keyLower == config.keyBinds.confirm) {  // clear the filter string
 			location[0] = 'item';
 			if (item.comment == '') {
 				item.comment = false;
 			}
 		} else {
-			item.comment += key;
+			item.comment += key;  // we want case sensitivity so use key
 		}
 	}
 
 	// order
 	if (location[0] == 'order') {
-		if (key == config.keyBinds.order || key == config.keyBinds.back) {  // return to menu
+		if (keyLower == config.keyBinds.order || keyLower == config.keyBinds.back) {  // return to menu
 			location[0] = 'menu';
 			location[1] = '';
-			render(location, submenu, config, order, err, menu, item);
+			renderWrap();
 			return;
-		} else if (key == config.keyBinds.confirm) {  // go back to item mode to edit an item
+		} else if (keyLower == config.keyBinds.confirm) {  // go back to item mode to edit an item
 			item = clone(order.items[location[1]]);  // copy item from order
 			location[0] = 'item';  // move to item mode
-		} else if (key == config.keyBinds.delete || key == config.keyBinds.backspace) {  // delete the item
+		} else if (keyLower == config.keyBinds.delete || keyLower == config.keyBinds.backspace) {  // delete the item
 			order.items.splice(location[1], 1);
 
 			if (order.items.length == 0) {  // if the order is now empty, return to the menu
 				location[0] = 'menu';
 				location[1] = '';
-				render(location, submenu, config, order, err, menu, item);
+				renderWrap();
 				return;
 			}
-		} else if (key == config.keyBinds.arrUp) {  // move selection up
+		} else if (keyLower == config.keyBinds.arrUp) {  // move selection up
 			location[1]--;
-		} else if (key == config.keyBinds.arrDown) {  // move selection down
+		} else if (keyLower == config.keyBinds.arrDown) {  // move selection down
 			location[1]++;
 		}
 
@@ -263,14 +265,14 @@ process.stdin.on('data', function(key){
 		}
 	}
 
-	render(location, submenu, config, order, err, menu, item);
+	renderWrap();
 });
 
 /**
  * Respond to resizes
  */
 process.stdout.on('resize', () => {
-	render(location, submenu, config, order, err, menu, item);
+	renderWrap();
 });
 
 
@@ -334,4 +336,12 @@ function clone(obj) {
 		if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
 	}
 	return copy;
+}
+
+
+/**
+ * Abbreviate this long render call
+ */
+function renderWrap() {
+	render(location, submenu, config, order, err, menu, item);
 }
