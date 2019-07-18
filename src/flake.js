@@ -155,6 +155,7 @@ process.stdin.on('data', function(key){
 			} else if (keyLower == config.keyBinds.confirm) {  // confirm and go to the next stage of finishing
 				// location = ['finish', 'pay', 'cash'];
 				// renderWrap();
+				order.date = new Date();
 				receptWrapper('ticket', order);
 				return;
 			} else {
