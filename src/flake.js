@@ -33,6 +33,8 @@ renderWrap();  // render the initial screen
 process.stdin.on('data', function(key){
 	var keyLower = key.toLowerCase();
 
+	err = [];  // clear the err object
+
 	// give you a way to escape
 	if (exitConfirm) {
 		if (keyLower === '\u0003' || keyLower === '\u0004') {

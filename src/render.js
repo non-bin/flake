@@ -172,5 +172,4 @@ module.exports.render = function(location, submenu, config, order, err, menu, it
 		t.CURSOR_TO(process.stdout.rows-i, 0);// erase line, print message, and move up 1
 	}
 	process.stdout.write(t.RESET);
-	err = [];
 }
