@@ -29,3 +29,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - ability to edit order
  - name input
  - recept printing
+ - ability to 'toggle' radio options

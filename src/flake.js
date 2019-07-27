@@ -84,7 +84,11 @@ process.stdin.on('data', function(key){
 										item.options[i].push(keyLower);
 									}
 								} else {  // if not, set it
-									item.options[i] = keyLower;
+									if (item.options[i] == keyLower) {
+										item.options[i] = '';
+									} else {
+										item.options[i] = keyLower;
+									}
 								}
 							}
 						}
