@@ -21,11 +21,11 @@ process.stdin.setEncoding();        // get usefull feedback
 process.stdout.write(CURSOR_HIDE);  // hide the cursor
 
 // setup variables
-var location    = ['menu', ''];                                            // where the user is
-var order       = {'price': 0, 'items': [], 'comment': false, 'name': '', 'date': 0};             // store the order
+var location    = ['menu', ''];                                                              // where the user is
+var order       = {'price': 0, 'items': [], 'comment': false, 'name': '', 'date': 0};        // store the order
 var item        = {'code': '', 'options': [], 'quantity': 1, 'price': 0, 'comment': false};  // information on the current item
-var exitConfirm = false;                                                   // require 2 ^c/^d to exit
-var err         = [];                                                      // store errors to be rendered
+var exitConfirm = false;                                                                     // require 2 ^c/^d to exit
+var err         = [];                                                                        // store errors to be rendered
 
 renderWrap();  // render the initial screen
 

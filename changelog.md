@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## TODO
 ### Add
+ - coloring in item
+ - wrapping of options
+ - multi-letter option codes
+ - search menu by name
  - manual price input
  - change calculator
  - transaction history
@@ -14,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - inventory
  - automated ticket system
  - online order system
+ - shared options between items
 
 
 ## [1.0.0] - unreleased
