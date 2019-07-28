@@ -16,7 +16,7 @@ p.BLD_0 = p.ESC+'E\u0000';
 p.FNT_0 = p.ESC+'M\u0000';  // font
 p.FNT_1 = p.ESC+'M\u0001';
 p.LG    = p.ESC+'!\u0020';  // double width
-p.DONE  = '\n\n\n\n\n\n';  // print 6 new lines to give enough space to rip
+p.DONE  = '\n\n\n\n\n\n';   // print 6 new lines to give enough space to rip
 
 module.exports.p = p;
 
