@@ -20,6 +20,7 @@
 	},
 	"orderWidth": 30,
 
+	"printerPath": "/dev/usb/lp1",
 	"menu": {
 		"ff": {
 			"type": "item",

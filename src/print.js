@@ -43,7 +43,7 @@ module.exports.receptInit = function(path) {
  */
 module.exports.printRecept = function(type, content, location, submenu, config, order, err, menu, item, options = {printPrice: true}) {
 	var printStr = '';
-	var x        = module.exports.receptInit('/dev/usb/lp1');
+	var x        = module.exports.receptInit(config.printerPath);
 
 	switch (type) {
 		case 'ticket':
