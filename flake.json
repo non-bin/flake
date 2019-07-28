@@ -1,15 +1,18 @@
 {
 	"keyBinds": {
 		"comment": "`",
-		"order": "\u0009",
+		"order": "\t",
 		"_order": "tab",
-		"quantityInc": ["+", "="],
+		"quantityInc": [
+			"+",
+			"="
+		],
 		"quantityDec": "-",
-		"back": "\u001b[4~",
+		"back": "\u001b",
 		"_back": "end",
 		"confirm": "\r",
 		"_confirm": "enter",
-		"backspace": "\u007f",
+		"backspace": "",
 		"delete": "\u001b[3~",
 		"arrUp": "\u001b[a",
 		"arrDown": "\u001b[b",
@@ -22,76 +25,1042 @@
 
 	"printerPath": "/dev/usb/lp1",
 	"menu": {
-		"ff": {
+		"bt": {
+			"name": "Biltong",
 			"type": "item",
+			"price": 5,
+			"options": []
+		},
+		"fl": {
 			"name": "Flake",
+			"type": "item",
+			"price": 9,
+			"options": [
+				{
+					"type": "radio",
+					"name": "Cook Style",
+					"selected": "",
+					"values": {
+						"b": {
+							"name": "Battered",
+							"price": 0
+						},
+						"g": {
+							"name": "Grilled",
+							"price": 0
+						},
+						"c": {
+							"name": "Crumbed",
+							"price": 0
+						}
+					}
+				},
+				{
+					"type": "radio",
+					"name": "Combos",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$2 Chips & Salad",
+							"price": 5
+						},
+						"2": {
+							"name": "Rice & Salad",
+							"price": 5
+						}
+					}
+				}
+			]
+		},
+		"bm": {
+			"name": "Barramundi",
+			"type": "item",
+			"price": 10,
+			"options": [
+				{
+					"type": "radio",
+					"name": "Combos",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$2 Chips & Salad",
+							"price": 5
+						},
+						"2": {
+							"name": "Rice & Salad",
+							"price": 5
+						}
+					}
+				}
+			]
+		},
+		"ff": {
+			"name": "Flathead Fillets",
+			"type": "item",
+			"price": 3,
+			"options": [
+				{
+					"type": "radio",
+					"name": "Pack",
+					"selected": "i",
+					"values": {
+						"i": {
+							"name": "Individual",
+							"price": 0
+						},
+						"f": {
+							"name": "4 Pack",
+							"price": 7
+						}
+					}
+				},
+				{
+					"type": "radio",
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$2 Chips & Salad",
+							"price": 5
+						},
+						"2": {
+							"name": "Rice & Salad",
+							"price": 5
+						}
+					}
+				}
+			]
+		},
+		"sm": {
+			"name": "Salmon",
+			"type": "item",
+			"price": 12,
+			"options": [
+				{
+					"type": "radio",
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$2 Chips & Salad",
+							"price": 5
+						},
+						"2": {
+							"name": "Rice & Salad",
+							"price": 5
+						}
+					}
+				}
+			]
+		},
+		"sq": {
+			"name": "Salt and Pepper Squid",
+			"type": "item",
 			"price": 8,
 			"options": [
 				{
 					"type": "radio",
-					"name": "Method",
-					"selected": "b",
-					"values": {"b": {"name": "Battered"}, "g": {"name": "Grilled"}, "c": {"name": "Crumbed"}}
-				}
-			]
-		},
-		"dr": {
-			"type": "item",
-			"name": "Drink",
-			"price": 2.5,
-			"options": [
-				{
-					"type": "radio",
-					"name": "Type",
-					"selected": "c",
-					"values": {"c": {"name": "Can"}, "s": {"name": "Small Bottle", "price": 1}, "l": {"name": "Large Bottle", "price": 2}}
-				}
-			]
-		},
-		"fs": {
-			"type": "item",
-			"name": "Salmon",
-			"price": 6
-		},
-		"ds": {
-			"type": "item",
-			"name": "Dim Sim",
-			"price": 2.5,
-			"options": [
-				{
-					"type": "radio",
-					"name": "Method",
-					"selected": "s",
-					"values": {"s": {"name": "Steamed"}, "f": {"name": "Fried"}}
-				},
-				{
-					"type": "radio",
-					"name": "Type",
-					"selected": "c",
-					"values": {"c": {"name": "Classic"}, "o": {"name": "Southie", "price": 1}}
-				},
-				{
-					"type": "toggle",
-					"name": "Addons",
-					"values": {"y": {"name": "Soy Sauce"}}
-				},
-				{
-					"type": "toggle",
-					"name": "Discounts",
-					"values": {"1": {"name": "One", "price": -1}, "2": {"name": "Three", "price": -3.3}, "3": {"name": "Five", "price": -5}}
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$2 Chips & Salad",
+							"price": 5
+						},
+						"2": {
+							"name": "Rice & Salad",
+							"price": 5
+						}
+					}
 				}
 			]
 		},
 		"ch": {
-			"type": "item",
 			"name": "Chips",
+			"type": "item",
 			"price": 4,
 			"options": [
 				{
 					"type": "radio",
 					"name": "Size",
 					"selected": "s",
-					"values": {"s": {"name": "Small"}, "m": {"name": "Medium", "price": 2}, "l": {"name": "Large", "price": 4}}
+					"values": {
+						"s": {
+							"name": "Small",
+							"price": 0
+						},
+						"m": {
+							"name": "Medium",
+							"price": 2
+						},
+						"l": {
+							"name": "Large",
+							"price": 4
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Options",
+					"selected": "",
+					"values": {
+						"g": {
+							"name": "Gravy",
+							"price": 2
+						},
+						"e": {
+							"name": "Extra Crispy",
+							"price": 0
+						},
+						"c": {
+							"name": "Chicken Salt",
+							"price": 0
+						},
+						"v": {
+							"name": "Vinegar",
+							"price": 0
+						},
+						"n": {
+							"name": "No Salt",
+							"price": 0
+						}
+					}
+				}
+			]
+		},
+		"or": {
+			"name": "Onion Rings (6)",
+			"type": "item",
+			"price": 4,
+			"options": []
+		},
+		"sp": {
+			"name": "Sweet Potato Chips",
+			"type": "item",
+			"price": 6,
+			"options": [
+				{
+					"type": "radio",
+					"name": "Size",
+					"selected": "s",
+					"values": {
+						"s": {
+							"name": "Small",
+							"price": 0
+						},
+						"m": {
+							"name": "Medium",
+							"price": 2
+						},
+						"l": {
+							"name": "Large",
+							"price": 4
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Options",
+					"selected": "",
+					"values": {
+						"g": {
+							"name": "Gravy",
+							"price": 2
+						},
+						"e": {
+							"name": "Extra Crispy",
+							"price": 0
+						},
+						"c": {
+							"name": "Chicken Salt",
+							"price": 0
+						},
+						"v": {
+							"name": "Vinegar",
+							"price": 0
+						},
+						"n": {
+							"name": "No Salt",
+							"price": 0
+						}
+					}
+				}
+			]
+		},
+		"bb": {
+			"name": "Beef Burger",
+			"type": "item",
+			"price": 8,
+			"options": [
+				{
+					"type": "toggle",
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$4 Chips & Can",
+							"price": 5
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extras",
+					"selected": "",
+					"values": {
+						"eb": {
+							"name": "Beetroot",
+							"price": 1
+						},
+						"ece": {
+							"name": "Cheese",
+							"price": 0.5
+						},
+						"ee": {
+							"name": "Egg",
+							"price": 1
+						},
+						"eon": {
+							"name": "Onion",
+							"price": 0.5
+						},
+						"epk": {
+							"name": "Pickle",
+							"price": 0.5
+						},
+						"epa": {
+							"name": "Pineapple",
+							"price": 1
+						},
+						"eor": {
+							"name": "Onion Rings",
+							"price": 1
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Exclusions",
+					"selected": "",
+					"values": {
+						"nl": {
+							"name": "Lettuce",
+							"price": 0
+						},
+						"nt": {
+							"name": "Tomato",
+							"price": 0
+						},
+						"nc": {
+							"name": "Cheese",
+							"price": 0
+						},
+						"ns": {
+							"name": "Sauce",
+							"price": 0
+						},
+						"ne": {
+							"name": "Egg",
+							"price": 0
+						},
+						"nb": {
+							"name": "Beetroot",
+							"price": 0
+						},
+						"np": {
+							"name": "Pineapple",
+							"price": 0
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extra Meats",
+					"selected": "",
+					"values": {
+						"ebe": {
+							"name": "Beef",
+							"price": 4
+						},
+						"eck": {
+							"name": "Chicken",
+							"price": 4
+						},
+						"ef": {
+							"name": "Fish",
+							"price": 4
+						},
+						"evp": {
+							"name": "Vegan Patty",
+							"price": 4
+						}
+					}
+				}
+			]
+		},
+		"chb": {
+			"name": "Cheese Burger",
+			"type": "item",
+			"price": 6,
+			"options": [
+				{
+					"type": "toggle",
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$4 Chips & Can",
+							"price": 5
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extras",
+					"selected": "",
+					"values": {
+						"eb": {
+							"name": "Beetroot",
+							"price": 1
+						},
+						"ece": {
+							"name": "Cheese",
+							"price": 0.5
+						},
+						"ee": {
+							"name": "Egg",
+							"price": 1
+						},
+						"eon": {
+							"name": "Onion",
+							"price": 0.5
+						},
+						"epk": {
+							"name": "Pickle",
+							"price": 0.5
+						},
+						"epa": {
+							"name": "Pineapple",
+							"price": 1
+						},
+						"eor": {
+							"name": "Onion Rings",
+							"price": 1
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Exclusions",
+					"selected": "",
+					"values": {
+						"nl": {
+							"name": "Lettuce",
+							"price": 0
+						},
+						"nt": {
+							"name": "Tomato",
+							"price": 0
+						},
+						"nc": {
+							"name": "Cheese",
+							"price": 0
+						},
+						"ns": {
+							"name": "Sauce",
+							"price": 0
+						},
+						"ne": {
+							"name": "Egg",
+							"price": 0
+						},
+						"nb": {
+							"name": "Beetroot",
+							"price": 0
+						},
+						"np": {
+							"name": "Pineapple",
+							"price": 0
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extra Meats",
+					"selected": "",
+					"values": {
+						"ebe": {
+							"name": "Beef",
+							"price": 4
+						},
+						"eck": {
+							"name": "Chicken",
+							"price": 4
+						},
+						"ef": {
+							"name": "Fish",
+							"price": 4
+						},
+						"evp": {
+							"name": "Vegan Patty",
+							"price": 4
+						}
+					}
+				}
+			]
+		},
+		"cb": {
+			"name": "Chicken Burger",
+			"type": "item",
+			"price": 10,
+			"options": [
+				{
+					"type": "toggle",
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$4 Chips & Can",
+							"price": 5
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extras",
+					"selected": "",
+					"values": {
+						"eb": {
+							"name": "Beetroot",
+							"price": 1
+						},
+						"ece": {
+							"name": "Cheese",
+							"price": 0.5
+						},
+						"ee": {
+							"name": "Egg",
+							"price": 1
+						},
+						"eon": {
+							"name": "Onion",
+							"price": 0.5
+						},
+						"epk": {
+							"name": "Pickle",
+							"price": 0.5
+						},
+						"epa": {
+							"name": "Pineapple",
+							"price": 1
+						},
+						"eor": {
+							"name": "Onion Rings",
+							"price": 1
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Exclusions",
+					"selected": "",
+					"values": {
+						"nl": {
+							"name": "Lettuce",
+							"price": 0
+						},
+						"nt": {
+							"name": "Tomato",
+							"price": 0
+						},
+						"nc": {
+							"name": "Cheese",
+							"price": 0
+						},
+						"ns": {
+							"name": "Sauce",
+							"price": 0
+						},
+						"ne": {
+							"name": "Egg",
+							"price": 0
+						},
+						"nb": {
+							"name": "Beetroot",
+							"price": 0
+						},
+						"np": {
+							"name": "Pineapple",
+							"price": 0
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extra Meats",
+					"selected": "",
+					"values": {
+						"ebe": {
+							"name": "Beef",
+							"price": 4
+						},
+						"eck": {
+							"name": "Chicken",
+							"price": 4
+						},
+						"ef": {
+							"name": "Fish",
+							"price": 4
+						},
+						"evp": {
+							"name": "Vegan Patty",
+							"price": 4
+						}
+					}
+				}
+			]
+		},
+		"fb": {
+			"name": "Fish Burger",
+			"type": "item",
+			"price": 10,
+			"options": [
+				{
+					"type": "toggle",
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$4 Chips & Can",
+							"price": 5
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extras",
+					"selected": "",
+					"values": {
+						"eb": {
+							"name": "Beetroot",
+							"price": 1
+						},
+						"ece": {
+							"name": "Cheese",
+							"price": 0.5
+						},
+						"ee": {
+							"name": "Egg",
+							"price": 1
+						},
+						"eon": {
+							"name": "Onion",
+							"price": 0.5
+						},
+						"epk": {
+							"name": "Pickle",
+							"price": 0.5
+						},
+						"epa": {
+							"name": "Pineapple",
+							"price": 1
+						},
+						"eor": {
+							"name": "Onion Rings",
+							"price": 1
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Exclusions",
+					"selected": "",
+					"values": {
+						"nl": {
+							"name": "Lettuce",
+							"price": 0
+						},
+						"nt": {
+							"name": "Tomato",
+							"price": 0
+						},
+						"nc": {
+							"name": "Cheese",
+							"price": 0
+						},
+						"ns": {
+							"name": "Sauce",
+							"price": 0
+						},
+						"ne": {
+							"name": "Egg",
+							"price": 0
+						},
+						"nb": {
+							"name": "Beetroot",
+							"price": 0
+						},
+						"np": {
+							"name": "Pineapple",
+							"price": 0
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extra Meats",
+					"selected": "",
+					"values": {
+						"ebe": {
+							"name": "Beef",
+							"price": 4
+						},
+						"eck": {
+							"name": "Chicken",
+							"price": 4
+						},
+						"ef": {
+							"name": "Fish",
+							"price": 4
+						},
+						"evp": {
+							"name": "Vegan Patty",
+							"price": 4
+						}
+					}
+				}
+			]
+		},
+		"sb": {
+			"name": "Salmon Burger",
+			"type": "item",
+			"price": 15,
+			"options": [
+				{
+					"type": "toggle",
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$4 Chips & Can",
+							"price": 5
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extras",
+					"selected": "",
+					"values": {
+						"eb": {
+							"name": "Beetroot",
+							"price": 1
+						},
+						"ece": {
+							"name": "Cheese",
+							"price": 0.5
+						},
+						"ee": {
+							"name": "Egg",
+							"price": 1
+						},
+						"eon": {
+							"name": "Onion",
+							"price": 0.5
+						},
+						"epk": {
+							"name": "Pickle",
+							"price": 0.5
+						},
+						"epa": {
+							"name": "Pineapple",
+							"price": 1
+						},
+						"eor": {
+							"name": "Onion Rings",
+							"price": 1
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Exclusions",
+					"selected": "",
+					"values": {
+						"nl": {
+							"name": "Lettuce",
+							"price": 0
+						},
+						"nt": {
+							"name": "Tomato",
+							"price": 0
+						},
+						"nc": {
+							"name": "Cheese",
+							"price": 0
+						},
+						"ns": {
+							"name": "Sauce",
+							"price": 0
+						},
+						"ne": {
+							"name": "Egg",
+							"price": 0
+						},
+						"nb": {
+							"name": "Beetroot",
+							"price": 0
+						},
+						"np": {
+							"name": "Pineapple",
+							"price": 0
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extra Meats",
+					"selected": "",
+					"values": {
+						"ebe": {
+							"name": "Beef",
+							"price": 4
+						},
+						"eck": {
+							"name": "Chicken",
+							"price": 4
+						},
+						"ef": {
+							"name": "Fish",
+							"price": 4
+						},
+						"evp": {
+							"name": "Vegan Patty",
+							"price": 4
+						}
+					}
+				}
+			]
+		},
+		"lb": {
+			"name": "Lot Burger",
+			"type": "item",
+			"price": 10,
+			"options": [
+				{
+					"type": "toggle",
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$4 Chips & Can",
+							"price": 5
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extras",
+					"selected": "",
+					"values": {
+						"eb": {
+							"name": "Beetroot",
+							"price": 1
+						},
+						"ece": {
+							"name": "Cheese",
+							"price": 0.5
+						},
+						"ee": {
+							"name": "Egg",
+							"price": 1
+						},
+						"eon": {
+							"name": "Onion",
+							"price": 0.5
+						},
+						"epk": {
+							"name": "Pickle",
+							"price": 0.5
+						},
+						"epa": {
+							"name": "Pineapple",
+							"price": 1
+						},
+						"eor": {
+							"name": "Onion Rings",
+							"price": 1
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Exclusions",
+					"selected": "",
+					"values": {
+						"nl": {
+							"name": "Lettuce",
+							"price": 0
+						},
+						"nt": {
+							"name": "Tomato",
+							"price": 0
+						},
+						"nc": {
+							"name": "Cheese",
+							"price": 0
+						},
+						"ns": {
+							"name": "Sauce",
+							"price": 0
+						},
+						"ne": {
+							"name": "Egg",
+							"price": 0
+						},
+						"nb": {
+							"name": "Beetroot",
+							"price": 0
+						},
+						"np": {
+							"name": "Pineapple",
+							"price": 0
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extra Meats",
+					"selected": "",
+					"values": {
+						"ebe": {
+							"name": "Beef",
+							"price": 4
+						},
+						"eck": {
+							"name": "Chicken",
+							"price": 4
+						},
+						"ef": {
+							"name": "Fish",
+							"price": 4
+						},
+						"evp": {
+							"name": "Vegan Patty",
+							"price": 4
+						}
+					}
+				}
+			]
+		},
+		"vb": {
+			"name": "Vegan Burger",
+			"type": "item",
+			"price": 10,
+			"options": [
+				{
+					"type": "toggle",
+					"name": "Combo",
+					"selected": "",
+					"values": {
+						"1": {
+							"name": "$4 Chips & Can",
+							"price": 5
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extras",
+					"selected": "",
+					"values": {
+						"eb": {
+							"name": "Beetroot",
+							"price": 1
+						},
+						"ece": {
+							"name": "Cheese",
+							"price": 0.5
+						},
+						"ee": {
+							"name": "Egg",
+							"price": 1
+						},
+						"eon": {
+							"name": "Onion",
+							"price": 0.5
+						},
+						"epk": {
+							"name": "Pickle",
+							"price": 0.5
+						},
+						"epa": {
+							"name": "Pineapple",
+							"price": 1
+						},
+						"eor": {
+							"name": "Onion Rings",
+							"price": 1
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Exclusions",
+					"selected": "",
+					"values": {
+						"nl": {
+							"name": "Lettuce",
+							"price": 0
+						},
+						"nt": {
+							"name": "Tomato",
+							"price": 0
+						},
+						"nc": {
+							"name": "Cheese",
+							"price": 0
+						},
+						"ns": {
+							"name": "Sauce",
+							"price": 0
+						},
+						"ne": {
+							"name": "Egg",
+							"price": 0
+						},
+						"nb": {
+							"name": "Beetroot",
+							"price": 0
+						},
+						"np": {
+							"name": "Pineapple",
+							"price": 0
+						}
+					}
+				},
+				{
+					"type": "toggle",
+					"name": "Extra Meats",
+					"selected": "",
+					"values": {
+						"ebe": {
+							"name": "Beef",
+							"price": 4
+						},
+						"eck": {
+							"name": "Chicken",
+							"price": 4
+						},
+						"ef": {
+							"name": "Fish",
+							"price": 4
+						},
+						"evp": {
+							"name": "Vegan Patty",
+							"price": 4
+						}
+					}
 				}
 			]
 		}
