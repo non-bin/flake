@@ -59,27 +59,120 @@ module.exports.render = function(location, submenu, config, order, err, menu, it
 
 	case 'itemComment':
 	case 'item':
+		var price             = '';
+		var selected          = '';
+		var codeMaxLen        = [];
+		var nameMaxLen        = [];
+		var priceMaxLen       = [];
+		var codeMaxLenGlob    = 0;
+		var nameMaxLenGlob    = 0;
+		var priceMaxLenGlob   = 0;
+		var noOptionValueCols = 1;
+		var colNo             = 0;
+
 		process.stdout.write(menu[item.code].name+' $'+menu[item.code].price.toFixed(2)+'\n\n');  // name
 		process.stdout.write('Quantity: '+item.quantity+'\n\n');  // quantity
 
 		if (menu[item.code].options) {
-			for (let i = 0; i < menu[item.code].options.length; i++) {
-				process.stdout.write(menu[item.code].options[i].name+'\n');  // option name
+			// determine the max length of all attributes
+			for (let optionNo = 0; optionNo < menu[item.code].options.length; optionNo++) {
+				for (const optionValueCode in menu[item.code].options[optionNo].values) {
+					if (menu[item.code].options[optionNo].values.hasOwnProperty(optionValueCode)) {
+						const value = menu[item.code].options[optionNo].values[optionValueCode];
 
-				for (const code in menu[item.code].options[i].values) {
-					if (menu[item.code].options[i].values.hasOwnProperty(code)) {
-						if (menu[item.code].options[i].values[code].price > 0) {
-							price = ' (+$'+Math.abs(menu[item.code].options[i].values[code].price)+')';
-						} else if (menu[item.code].options[i].values[code].price < 0) {
-							price = ' (-$'+Math.abs(menu[item.code].options[i].values[code].price)+')';
-						} else {
-							price = '';
+						// code
+						if (optionValueCode.length > codeMaxLenGlob) {
+							codeMaxLenGlob = optionValueCode.length;
 						}
 
-						if (item.options[i].includes(code)) {
-							process.stdout.write(t.SELECTED + code + ' - ' + menu[item.code].options[i].values[code].name + price + t.RESET + '  ');
+						// name
+						if (value.name.length > nameMaxLenGlob) {
+							nameMaxLenGlob = value.name.length;
+						}
+
+						// price
+						if (value.price.toString().length+2 > priceMaxLenGlob) {
+							priceMaxLenGlob = value.price.toString().length+2;
+						}
+					}
+				}
+			}
+
+			noOptionValueCols = Math.floor((process.stdout.columns-config.orderWidth) / (codeMaxLenGlob+nameMaxLenGlob+priceMaxLenGlob+2));
+			noOptionValueCols = Math.floor((process.stdout.columns-config.orderWidth) / (codeMaxLenGlob+nameMaxLenGlob+priceMaxLenGlob+2+noOptionValueCols));
+
+			for (let optionNo = 0; optionNo < menu[item.code].options.length; optionNo++) {  // for each option
+				codeMaxLen  = [];
+				nameMaxLen  = [];
+				priceMaxLen = [];
+				colNo       = 0;
+
+				for (const optionValueCode in menu[item.code].options[optionNo].values) {
+					if (menu[item.code].options[optionNo].values.hasOwnProperty(optionValueCode)) {
+						const value = menu[item.code].options[optionNo].values[optionValueCode];
+
+						if (codeMaxLenGlob == undefined || nameMaxLenGlob == undefined || priceMaxLenGlob == undefined) {
+							codeMaxLenGlob = 0;
+							nameMaxLenGlob = 0;
+							priceMaxLenGlob = 0;
+						}
+
+						// code
+						if (optionValueCode.length > codeMaxLenGlob) {
+							codeMaxLenGlob = optionValueCode.length;
+						}
+
+						// name
+						if (value.name.length > nameMaxLenGlob) {
+							nameMaxLenGlob = value.name.length;
+						}
+
+						// price
+						if (value.price.toString().length+2 > priceMaxLenGlob) {
+							priceMaxLenGlob = value.price.toString().length+2;
+						}
+
+						if (colNo > noOptionValueCols-2) {  // if we have reached the end of the row (-2 because colNo is 0 indexed but noOptionValueCols is not)
+							colNo = 0;
 						} else {
-							process.stdout.write(code + ' - ' + menu[item.code].options[i].values[code].name + price + '  ');
+							colNo++;
+						}
+					}
+				}
+
+				colNo = 0;
+
+				process.stdout.write(t.RESET+t.UNDERLINE+menu[item.code].options[optionNo].name+'\n');
+
+				for (const optionValueCode in menu[item.code].options[optionNo].values) {  // for each value
+					if (menu[item.code].options[optionNo].values.hasOwnProperty(optionValueCode)) {
+						const value = menu[item.code].options[optionNo].values[optionValueCode];
+
+						if (item.options[optionNo].includes(optionValueCode)) {
+							selected = t.SELECTED;
+						} else {
+							selected = '';
+						}
+
+						if (colNo > 0) {
+							process.stdout.write(t.RESET+t.DIM+'  |  ');
+						}
+						process.stdout.write(t.RESET+selected+t.DIM+ optionValueCode.padEnd(codeMaxLenGlob)+' ');  // code
+						process.stdout.write(t.RESET+t.BRIGHT+selected+ value.name.padEnd(nameMaxLenGlob)+' ');  // name
+
+						price = '$'+Math.abs(value.price);  // price
+						if (value.price < 0) {
+							price = '-'+price;
+						} else if (value.price >= 0) {
+							price = '+'+price;
+						}
+						process.stdout.write(t.RESET+selected+t.DIM+price.padEnd(priceMaxLenGlob)+''+t.RESET);
+
+						if (colNo > noOptionValueCols-2) {  // if we have reached the end of the row (-2 because colNo is 0 indexed but noOptionValueCols is not)
+							process.stdout.write('\n');
+							colNo = 0;
+						} else {
+							colNo++;
 						}
 					}
 				}
